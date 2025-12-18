@@ -3,7 +3,9 @@ __pycache__/
 *.py[codz]
 *$py.class
 
-# csv files
+# csv and compressed files
+*.gz
+*.tar
 *.csv
 
 # C extensions
