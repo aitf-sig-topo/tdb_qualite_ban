@@ -17,6 +17,11 @@ Import des BAL au choix sur la france entière, ou par département.
 
 On importe le fichier csv via un script SQL dans une base PostgreSql, et on produit également les indicateurs via SQL.
 
+Prérequis pour les scripts : 
+- une base postgresql avec extension postgis
+- plsql installé (pour import sql des tables bal et creation de la table des indicateurs)
+- ogr2ogr installé (pour l'import des contours de communes)
+
 ## Carte synthétique
 On peut agréger les indicateurs en un seul, selon une pondération à affiner.
 
