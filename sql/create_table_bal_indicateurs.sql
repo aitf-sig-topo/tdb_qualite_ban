@@ -99,21 +99,21 @@ nb_adresses_geodoublon_par_commune as ( -- decompte par commune
 )
 -- synthèse de tous les indicateurs 
 select
-	indicateurs_de_base.*,
-	coalesce(nb_dates_distinctes_par_commune.nb_dates_distinctes, 0) nb_dates_distinctes,
-	coalesce(nb_adresse_modifiees.nb_adresses_modifiees_recement, 0) nb_adresses_modifiees_recement,
-	coalesce(nb_adresses_geodoublon_par_commune.nb_adresses_geodoublon, 0) nb_geodoublons,
-    st_area(geo_commune.geom)/1000000.0 surface_commune_km2,
-	geo_commune.geom
+    indicateurs_de_base.*,
+    coalesce(nb_dates_distinctes_par_commune.nb_dates_distinctes, 0) nb_dates_distinctes,
+    coalesce(nb_adresse_modifiees.nb_adresses_modifiees_recement, 0) nb_adresses_modifiees_recement,
+    coalesce(nb_adresses_geodoublon_par_commune.nb_adresses_geodoublon, 0) nb_geodoublons,
+    public.st_area(geo_commune.geom)/1000000.0 surface_commune_km2,
+    geo_commune.geom
 into
-	temp.bal_indicateurs -- A MODIFIER selon le nom souhaité pour la table en sortie des indicateurs
+    bal_indicateurs -- A MODIFIER selon le nom souhaité pour la table en sortie des indicateurs
 from
-	indicateurs_de_base_par_commune indicateurs_de_base
-		left join nb_dates_distinctes_par_commune on nb_dates_distinctes_par_commune.commune_insee = indicateurs_de_base.commune_insee
-		left join nb_adresse_modifiees on nb_adresse_modifiees.commune_insee = indicateurs_de_base.commune_insee
-		left join nb_adresses_geodoublon_par_commune on nb_adresses_geodoublon_par_commune.commune_insee = indicateurs_de_base.commune_insee
+    indicateurs_de_base_par_commune indicateurs_de_base
+        left join nb_dates_distinctes_par_commune on nb_dates_distinctes_par_commune.commune_insee = indicateurs_de_base.commune_insee
+        left join nb_adresse_modifiees on nb_adresse_modifiees.commune_insee = indicateurs_de_base.commune_insee
+        left join nb_adresses_geodoublon_par_commune on nb_adresses_geodoublon_par_commune.commune_insee = indicateurs_de_base.commune_insee
         inner join 
-			communes geo_commune -- A MODIFIER SELON LA TABLE CONTENANT LA GEOMETRIE DES COMMUNES
-			on geo_commune.codgeo = indicateurs_de_base.commune_insee::text -- A MODIFIER SELON le nom du champs code insee de la commune
+            commune_contour geo_commune -- A MODIFIER SELON LA TABLE CONTENANT LA GEOMETRIE DES COMMUNES
+            on geo_commune.codgeo = indicateurs_de_base.commune_insee::text -- A MODIFIER SELON le nom du champs code insee de la commune
 ;
 
