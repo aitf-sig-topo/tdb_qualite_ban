@@ -3,10 +3,11 @@ __pycache__/
 *.py[codz]
 *$py.class
 
-# csv and compressed files
+# csv and compressed files and geojson
 *.gz
 *.tar
 *.csv
+*.geojson
 
 # C extensions
 *.so
