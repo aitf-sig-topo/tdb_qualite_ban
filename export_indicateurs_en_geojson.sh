@@ -14,6 +14,6 @@ if [ -z "${POSTGRES_HOST}" ]; then
     export PGPASSWORD="monmotdepasse"
 fi
 
-ogr2ogr -f "GeoJSON" "$BASEDIR/out/bal_indicateurs.geojson" PG:"host=$POSTGRES_HOST port=$POSTGRES_PORT dbname=$POSTGRES_DB user=$POSTGRES_USERNAME password=$PGPASSWORD" bal_indicateurs
+ogr2ogr -f "GeoJSON" "$BASEDIR/out/bal_indicateurs.geojson" -t_srs EPSG:4326 PG:"host=$POSTGRES_HOST port=$POSTGRES_PORT dbname=$POSTGRES_DB user=$POSTGRES_USERNAME password=$PGPASSWORD" bal_indicateurs 
 
 
