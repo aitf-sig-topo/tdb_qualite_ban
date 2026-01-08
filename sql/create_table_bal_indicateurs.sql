@@ -119,33 +119,34 @@ indicateurs_tous as (
 )
 select
     -- indicateur agrégé
-	--modifications recentes
-	case when "nb_adresses_modifiees_recement" = 0 then 0 else
-	  ( greatest( coalesce(log(10, "nb_adresses_modifiees_recement" ),0),0) * 5  )
-	end
-	+
-	-- 100% modifie recemment, petite penalite car s'apparente a une mise a jour en masse sans distinction
-	case when  "nb_adresses_modifiees_recement" !=  "nb_adresses_total" then 0 else -3 end
-	+
-	-- duree des mises à jour, plus les mises a sont etalee dans le temps, plus la base est a priori vivante
-	case when "duree_maj_en_nb_de_jour" = 0 then 0 else
-	  ( greatest( coalesce(log(180,"duree_maj_en_nb_de_jour"),0),0) * 2 )
-	end
-	+ 
-	-- nombre de date distinctes de mises à jour, plus il y en a, plus la mise a jour est reguliere et suivie
-	case when  "nb_dates_distinctes" = 0 then 0 else
-	  ( greatest( coalesce(log( 5, "nb_dates_distinctes"),0),0) * 5 )
-	end
-	+
-	( "nb_adresses_certifiees" * 1.0 /  "nb_adresses_total"   * 20 )
-	-- penalite s'il y a des geodoublons
-	- 
-	case when "nb_geodoublons" = 0 then 0 else
-	  ( greatest( coalesce(log(10, "nb_geodoublons" ),0),0)  )
-	end
-	+
-	(  "nb_adresses_source_commune"  * 1.0 /  "nb_adresses_total"   * 5 )
-	as indicateur_aggrege,
+    round( 
+        --modifications recentes
+        case when "nb_adresses_modifiees_recement" = 0 then 0 else
+          ( greatest( coalesce(log(10, "nb_adresses_modifiees_recement" ),0),0) * 5  )
+        end
+        +
+        -- 100% modifie recemment, petite penalite car s'apparente a une mise a jour en masse sans distinction
+        case when  "nb_adresses_modifiees_recement" !=  "nb_adresses_total" then 0 else -3 end
+        +
+        -- duree des mises à jour, plus les mises a sont etalee dans le temps, plus la base est a priori vivante
+        case when "duree_maj_en_nb_de_jour" = 0 then 0 else
+          ( greatest( coalesce(log(180,"duree_maj_en_nb_de_jour"),0),0) * 2 )
+        end
+        + 
+        -- nombre de date distinctes de mises à jour, plus il y en a, plus la mise a jour est reguliere et suivie
+        case when  "nb_dates_distinctes" = 0 then 0 else
+          ( greatest( coalesce(log( 5, "nb_dates_distinctes"),0),0) * 5 )
+        end
+        +
+        ( "nb_adresses_certifiees" * 1.0 /  "nb_adresses_total"   * 20 )
+        -- penalite s'il y a des geodoublons
+        - 
+        case when "nb_geodoublons" = 0 then 0 else
+          ( greatest( coalesce(log(10, "nb_geodoublons" ),0),0)  )
+        end
+        +
+        (  "nb_adresses_source_commune"  * 1.0 /  "nb_adresses_total"   * 5 )
+	)::integer as indicateur_aggrege,
     indicateurs_tous.*
 into
     bal_indicateurs -- A MODIFIER selon le nom souhaité pour la table en sortie des indicateurs
