@@ -42,6 +42,8 @@ Lancer le script :
     ./import_bal_csv.sh
     
 Si on souhaite importer les tables dans un schéma postgres particulier, il faut changer le schéma par défaut de l'utilisateur qui importe les données. En effet, dans les scripts sql qui sont appelés par la suite, la table sera mentionnée sans son schéma.
+
+Attention, pour le fichier france entière, l'import dure un petit quart d'heure.
     
 ### Script d'import des contours de communes
 Les contour de communes sont nécessaires pour cartographier les indicateurs. On récupère les contours simplifié des communes pour alléger les données (voir l'url de téléchargement des données dans le script).
@@ -49,6 +51,23 @@ Renseigner les paramètres base de donnée dans le script et le lancer :
 
     ./import_contour_commune.sh
     
+Attention, pour le moment, les contours des communes avec arrondissements n'est pas récupéré dans le fichier insee.
+    
+### Script de creation de la table des indicateurs
+Une fois le fichier bal importé et les contours des communes importés également, il est possible de générer la table des indicateurs qualité par commune. Renseigner les paramètres base de donnée dans le script et le lancer : 
+
+    ./cree_table_bal_indicateurs.sh
+    
+Pour la france entière, le traitement dure une dizaine de minutes.
+
+### Script d'export de la table des indicateurs en geojson
+Une fois la table des indicateurs créée dans Postgresql, on peut l'exporter en geojson. Cela permet par exemple de l'intégrer dans UMap.
+
+Renseigner les paramètres base de donnée dans le script et le lancer : 
+
+    ./export_indicateurs_en_geojson.sh
+    
+Le fichier résultat se trouve dans le dossier "out".
 
 ## Carte synthétique
 On peut agréger les indicateurs en un seul, selon une pondération à affiner.
