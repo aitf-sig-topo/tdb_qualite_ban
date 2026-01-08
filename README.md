@@ -52,20 +52,9 @@ Renseigner les paramètres base de donnée dans le script et le lancer :
 
 ## Carte synthétique
 On peut agréger les indicateurs en un seul, selon une pondération à affiner.
+L'indicateur aggrégé est calculé à la fin du script create_table_bal_indicateurs.sql.
 
-## Carte des indicateurs détaillés
-On peut également affiner la symbologie pour avoir une représentation par indicateur.
 
-Par exemple : 
-
-- Ellipse vert clair : sa largeur représente la longévité de la BAL, sa hauteur le nombre de date distinctes de mise à jour. Une ellipse plate indique une BAL ancienne mais mise à jour à intervalles peu régulier, une ellipse en hauteur indique une BAL fréquemment mise à jour et relativement récente. 
-Indicateur secondaire : plus la couleur de l'ellipse est transparente, moins il y a d'adresses certifiées.
-
-- Losange vert foncé : plus il est gros, plus il y a eu d'adresses mises à jour au cours des deux dernières années. 
-Indicateur secondaire : lorsque seul le contour du losange est représenté, cela signifie que toutes les adresses de la BAL ont été mises à jour ces deux dernières années (ce qui indique une mise à jour en masse de la BAL, pas forcément gage de qualité).
-
-- Point d'exclamation noir : indique la présence d'adresses 	superposées, signe que la BAL n'est pas encore nettoyée.
-Croix noire : représentative du taux d’adresses de source non communales.
 
 
 
