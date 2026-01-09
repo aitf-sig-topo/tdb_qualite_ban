@@ -6,6 +6,6 @@
 echo "[$(date '+%d/%m/%Y %H:%M:%S')] DEBUT Création table indicateurs BAL"
 
 # script SQL de creation des indicateur
-eval "$PSQL_CMD -f ./sql/create_table_bal_indicateurs.sql"
+eval "psql -f ./sql/create_table_bal_indicateurs.sql"
 
 echo "[$(date '+%d/%m/%Y %H:%M:%S')] FIN Création table indicateurs BAL"
