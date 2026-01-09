@@ -6,9 +6,9 @@ ALTER TABLE IF EXISTS commune_contour
         ADD COLUMN geom public.geometry(MultiPolygon,2154);
 
 
--- copie géometrie non typée vers geométrie typée        
-update commune_contour set geom =  wkb_geometry; 
+-- copie géometrie non typée vers geométrie typée
+UPDATE commune_contour set geom = ST_Multi(geom_org); 
 
 -- supprime colonne géométrie non typée
-ALTER TABLE commune_contour drop column wkb_geometry ;
-   
+ALTER TABLE commune_contour drop column geom_org ;
+

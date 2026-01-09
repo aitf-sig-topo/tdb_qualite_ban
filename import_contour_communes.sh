@@ -28,14 +28,23 @@ fi
 # -s_srs EPSG:2154 -t_srs EPSG:2154
 
 ## enlève éventuelle données déjà présentes
-eval "$PSQL_CMD -c 'truncate commune_contour'"
+echo "suppression table des communes"
+psql_command="psql -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USERNAME -d $POSTGRES_DB -c 'DROP TABLE IF EXISTS commune_contour;'"
+eval "$psql_command"
+echo "fait"
 
-ogr2ogr -f "PostgreSQL" PG:"host=$POSTGRES_HOST port=$POSTGRES_PORT dbname=$POSTGRES_DB user=$POSTGRES_USERNAME password=$PGPASSWORD" "$OUTPUT_FILE" -nln $DB_TABLE  -append
+
+echo "chargement de la couche des communes"
+ogr2ogr_command="ogr2ogr -f \"PostgreSQL\" \
+PG:\"host=$POSTGRES_HOST port=$POSTGRES_PORT user=$POSTGRES_USERNAME password=$PGPASSWORD dbname=$POSTGRES_DB\" \
+$OUTPUT_FILE -nln $DB_TABLE -lco GEOMETRY_NAME=geom_org"
+eval "$ogr2ogr_command"
+echo "chargement fait"
+
 
 # nettoie la géométrie des communes 
-eval "$PSQL_CMD -f ./sql/nettoie_table_contour_commune.sql"
+eval "psql -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USERNAME -d $POSTGRES_DB -f ./sql/nettoie_table_contour_commune.sql"
 
 echo "[$(date '+%d/%m/%Y %H:%M:%S')] END IMPORTING $DB_TABLE"
-
 
 
