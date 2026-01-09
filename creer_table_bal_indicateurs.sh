@@ -6,6 +6,6 @@
 echo "[$(date '+%d/%m/%Y %H:%M:%S')] DEBUT Création table indicateurs BAL"
 
 # script SQL de creation des indicateur
-eval "psql -f ./sql/create_table_bal_indicateurs.sql"
+eval "psql -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USERNAME -d $POSTGRES_DB -f ./sql/create_table_bal_indicateurs.sql"
 
 echo "[$(date '+%d/%m/%Y %H:%M:%S')] FIN Création table indicateurs BAL"
