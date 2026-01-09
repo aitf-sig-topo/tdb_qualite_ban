@@ -25,5 +25,10 @@ Se déplacer dans le répertoire du projet : `cd /srv/aitf/tdb_qualite_ban/insta
 
 Exécuter le script d'installation : `./serveur_logiciels.sh`.
 
-Puis le script de configuration de PostgreSQL : `./postgresql_config.sh`.
+
+## Configuration de la base de données
+
+Exécuter le script de configuration de PostgreSQL : `./setup_postgresql.sh`.
+
+Puis le script de configuration de la base de données : `./setup_db.sh`.
 
