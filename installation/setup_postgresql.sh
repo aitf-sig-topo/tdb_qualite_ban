@@ -1,5 +1,11 @@
 #!/bin/bash
 
+PG_HBA_CONF="/etc/postgresql/*/main/pg_hba.conf"
+PG_CONF="/etc/postgresql/*/main/postgresql.conf"
+PG_SERVICE="postgresql"
+PG_PASS_FILE="$HOME/.pgpass"
+
+
 # Modifier le fichier pg_hba.conf pour autoriser l'accès depuis n'importe où
 echo "Modification de $PG_HBA_CONF pour autoriser l'accès..."
 echo "host    all             aitf_admin      0.0.0.0/0               scram-sha-256" | sudo tee -a $PG_HBA_CONF

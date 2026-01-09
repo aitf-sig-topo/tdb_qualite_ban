@@ -1,7 +1,7 @@
 #! /bin/bash
 
-POSTGRES_PORT=5432
-POSTGRES_HOST=localhost
-POSTGRES_DB=ban
-POSTGRES_USERNAME=aitf_admin
-PGPASSWORD=vivelaterritoriale
+PG_HOST=localhost
+PG_PORT=5432
+PG_USERNAME=aitf_admin
+PG_PASSWORD=vivelaterritoriale
+PG_DB=ban
