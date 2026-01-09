@@ -15,9 +15,14 @@ PG_PASS_FILE="$HOME/.pgpass"
 echo "Création du rôle '$PG_ROLE'..."
 sudo -u $PG_USER psql -c "CREATE ROLE $PG_ROLE WITH SUPERUSER LOGIN PASSWORD '$PG_PASSWORD';"
 
-# 2. Créer la base de données 'ban' et assigner le rôle 'aitf_admin' comme propriétaire
+# 2.1 Créer la base de données 'ban' et assigner le rôle 'aitf_admin' comme propriétaire
 echo "Création de la base de données '$PG_DB'..."
+sudo -u $PG_USER psql -c "DROP DATABASE $PG_DB ;"
 sudo -u $PG_USER psql -c "CREATE DATABASE $PG_DB OWNER $PG_ROLE;"
+
+# 2.2 Les extensions
+sudo -u $PG_USER psql -d $PG_DB -c "CREATE EXTENSION postgis;" || true
+
 
 # 3. Modifier le fichier pg_hba.conf pour autoriser l'accès depuis n'importe où
 echo "Modification de $PG_HBA_CONF pour autoriser l'accès..."
