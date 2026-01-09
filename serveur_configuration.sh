@@ -1,5 +1,4 @@
 #!/bin/sh
-set -e
 
 
 # Créer un groupe dédié

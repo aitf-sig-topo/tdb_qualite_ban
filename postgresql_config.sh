@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+
 
 # Variables
 PG_USER="postgres"
@@ -9,6 +9,7 @@ PG_DB="ban"
 PG_HBA_CONF="/etc/postgresql/*/main/pg_hba.conf"
 PG_CONF="/etc/postgresql/*/main/postgresql.conf"
 PG_SERVICE="postgresql"
+PG_PASS_FILE="$HOME/.pgpass"
 
 # 1. Créer le rôle 'aitf_admin' avec mot de passe et droits superuser
 echo "Création du rôle '$PG_ROLE'..."
@@ -33,5 +34,11 @@ sudo systemctl restart $PG_SERVICE
 # 6. Pare-feu
 sudo ufw allow 5432/tcp
 sudo ufw reload
+
+# 7. Fichier pgpass
+echo "Création du fichier $PG_PASS_FILE..."
+touch "$PG_PASS_FILE"
+chmod 600 "$PG_PASS_FILE"
+echo "localhost:5432:$PG_DB:$PG_ROLE:$PG_PASSWORD" >> "$PG_PASS_FILE"
 
 echo "Script terminé avec succès !"

@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+
 
 sudo apt install postgresql postgresql-postgis -y
 sudo apt install gdal-bin -y
