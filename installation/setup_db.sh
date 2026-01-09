@@ -34,3 +34,4 @@ sudo -u $PG_USER psql -c "CREATE DATABASE $PG_DB OWNER $PG_ROLE;"
 # On ajoute les extensions
 sudo -u $PG_USER psql -d $PG_DB -c "CREATE EXTENSION postgis;" || true
 
+
