@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# lecture du fichier de configuration
+source "../config.sh"
+
 PG_HBA_CONF="/etc/postgresql/*/main/pg_hba.conf"
 PG_CONF="/etc/postgresql/*/main/postgresql.conf"
 PG_SERVICE="postgresql"
@@ -23,9 +26,9 @@ sudo ufw allow 5432/tcp
 sudo ufw reload
 
 # Fichier pgpass
-# echo "Création du fichier $PG_PASS_FILE..."
-# touch "$PG_PASS_FILE"
-# chmod 600 "$PG_PASS_FILE"
-# echo "localhost:5432:$PG_DB:$PG_ROLE:$PG_PASSWORD" >> "$PG_PASS_FILE"
+echo "Création du fichier $PG_PASS_FILE..."
+touch "$PG_PASS_FILE"
+chmod 600 "$PG_PASS_FILE"
+echo "localhost:5432:$PG_DB:$PG_USERNAME:$PG_PASSWORD" >> "$PG_PASS_FILE"
 
 echo "Script terminé avec succès !"
