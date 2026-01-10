@@ -28,8 +28,9 @@ CREATE TABLE bal_brute
     certification_commune int
 );
 
-CREATE UNIQUE INDEX bal_brute_commune_insee_idx ON bal_brute (commune_insee);
-CREATE UNIQUE INDEX bal_brute_commune_nom_idx ON bal_brute (commune_nom);
+CREATE INDEX bal_brute_commune_insee_idx ON bal_brute (commune_insee);
+CREATE INDEX bal_brute_commune_nom_idx ON bal_brute (commune_nom);
+CREATE INDEX bal_brute_source_idx ON bal_brute (source);
 CREATE INDEX bal_brute_commune_date_der_maj_idx ON bal_brute (date_der_maj);
 
 
