@@ -38,17 +38,21 @@ On utilise pour cela le jeu de données ["Contours des communes de France simpli
 
 Exécuter le script d'import :
  
-    ./import_contour_commune.sh
+    ./import_contour_communes.sh
 
 /!\ Attention, pour le moment, les limites des communes avec arrondissements n'est pas récupéré dans le fichier insee.
 
 
 ### Import des fichiers BAL
 
-Lancer le script : 
+Lancer le script pour importer la France entière :
 
     ./import_bal_csv.sh
-    
+
+Ou sur un seul département :
+
+    ./import_bal_csv.sh -dpt 29
+
 Attention, pour le fichier BAL France entière, l'import dure un petit quart d'heure.
 
 
@@ -59,6 +63,10 @@ Une fois les 2 étapes précédentes réalisées, on peut générer la table des
     ./calculer_indicateurs.sh
 
 Pour la france entière, le traitement dure une dizaine de minutes.
+
+Ou pour mettre un jour un seul département :
+
+    ./calculer_indicateurs.sh -dpt 29
 
 
 ### Export de la table des indicateurs en geojson
