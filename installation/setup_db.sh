@@ -26,4 +26,9 @@ sudo -u postgres psql -c "CREATE DATABASE $PG_DB OWNER $PG_USERNAME;"
 # On ajoute les extensions
 sudo -u postgres psql -d $PG_DB -c "CREATE EXTENSION postgis;" || true
 
+# On crée un schéma dédié
+sudo -u postgres psql -d $PG_DB -c "CREATE SCHEMA ban_qualite AUTHORIZATION $PG_USERNAME;" || true
+
+# on modifie le search_path par défaut
+sudo -u postgres psql -d $PG_DB -c "ALTER DATABASE $PG_DB SET search_path TO ban_qualite, public;" || true
 
