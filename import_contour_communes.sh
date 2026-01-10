@@ -44,9 +44,9 @@ echo "suppression couche pré-existante"
 
 DB_TABLE=commune_contour
 
-psql_command="psql -h $PG_HOST -p $PG_PORT -U $PG_USERNAME -d $PG_DB -c 'DROP TABLE IF EXISTS $DB_TABLE;'"
-# echo "$psql_command"
-eval "$psql_command"
+PSQL_CMD="$PSQL_BASE_CMD -c 'DROP TABLE IF EXISTS $DB_TABLE;'"
+# echo "$PSQL_CMD"
+eval "$PSQL_CMD"
 echo "fait"
 
 
@@ -65,7 +65,10 @@ echo ""
 echo ""
 echo "Nettoyage de la géométrie"
 # On a du polygone et et du multipolygone donc on force en multipolygone
-eval "psql -h $PG_HOST -p $PG_PORT -U $PG_USERNAME -d $PG_DB -f ./sql/nettoie_table_contour_commune.sql"
+PSQL_CMD="$PSQL_BASE_CMD -f ./sql/nettoie_table_contour_commune.sql"
+# echo "$PSQL_CMD"
+eval "$PSQL_CMD"
+echo "fait"
 
 
 echo ""
