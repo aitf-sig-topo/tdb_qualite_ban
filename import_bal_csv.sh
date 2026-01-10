@@ -22,7 +22,7 @@ BAL_TO_TREAT="france"
 while [ $# -gt 0 ]; do
     case "$1" in
         -dpt)
-            if [[ -n "$2" ]]; then
+            if [ -n "$2" ]; then
                 BAL_TO_TREAT="$2"
                 shift 2
             else
@@ -78,7 +78,7 @@ echo ""
 echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
 
 PSQL_CMD="$PSQL_BASE_CMD -c \"\\\\COPY bal_brute FROM '$BAL_FILE' WITH (delimiter ';', format csv, header true)\""
-echo "$PSQL_CMD"
+#echo "$PSQL_CMD"
 eval "$PSQL_CMD"
 
 
