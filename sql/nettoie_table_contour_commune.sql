@@ -12,3 +12,6 @@ UPDATE commune_contour set geom = ST_Multi(geom_org);
 -- supprime colonne géométrie non typée
 ALTER TABLE commune_contour drop column geom_org ;
 
+-- des indexes
+CREATE UNIQUE INDEX commune_contour_codgeo_idx ON commune_contour (codgeo);
+CREATE INDEX commune_contour_geom_idx ON commune_contour USING gist (geom);
