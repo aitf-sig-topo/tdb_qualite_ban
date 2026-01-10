@@ -86,6 +86,7 @@ fi
 PSQL_CMD="$PSQL_BASE_CMD -c \"$SQL_DELETE\""
 # echo "$PSQL_CMD"
 eval "$PSQL_CMD"
+echo "fait"
 
 
 if [ "$BAL_TO_TREAT" = "france" ]; then
@@ -108,7 +109,8 @@ echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
 PSQL_CMD="$PSQL_BASE_CMD -c \"\\\\COPY bal_brute FROM '$BAL_FILE' WITH (delimiter ';', format csv, header true)\""
 #echo "$PSQL_CMD"
 eval "$PSQL_CMD"
-
+echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
+echo "fait"
 
 
 if [ "$BAL_TO_TREAT" = "france" ]; then
@@ -117,6 +119,7 @@ if [ "$BAL_TO_TREAT" = "france" ]; then
     PSQL_CMD="$PSQL_BASE_CMD -f ./sql/create_indexes_bal_brute.sql"
     # echo "$PSQL_CMD"
     eval "$PSQL_CMD"
+    echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
     echo "fait"
 fi
 

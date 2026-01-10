@@ -51,6 +51,5 @@ CREATE TABLE bal_indicateurs (
 );
 
 CREATE UNIQUE INDEX bal_indicateurs_commune_insee_idx ON bal_indicateurs (commune_insee);
-CREATE UNIQUE INDEX bal_indicateurs_commune_nom_idx ON bal_indicateurs (commune_nom);
 CREATE INDEX bal_indicateurs_geom_idx ON bal_indicateurs USING gist (geom);
 
