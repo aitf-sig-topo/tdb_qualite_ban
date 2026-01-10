@@ -71,6 +71,34 @@ else
     exit 0
 fi
 
+echo ""
+echo "Suppression des données pré-existantes"
+echo ""
+
+if [ "$BAL_TO_TREAT" = "france" ]; then
+    # on va vider toute la table
+    SQL_DELETE="TRUNCATE TABLE bal_brute;"
+else
+    # on ne supprime que les données du département
+    SQL_DELETE="DELETE FROM bal_brute WHERE LEFT(commune_insee, 2) = '$BAL_TO_TREAT';"
+fi
+
+PSQL_CMD="$PSQL_BASE_CMD -c \"$SQL_DELETE\""
+# echo "$PSQL_CMD"
+eval "$PSQL_CMD"
+
+
+if [ "$BAL_TO_TREAT" = "france" ]; then
+    # on va supprimer les indexes pour un chargement plus rapide
+    echo "Suppression des indexes"
+    echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
+    PSQL_CMD="$PSQL_BASE_CMD -f ./sql/drop_indexes_bal_brute.sql"
+    # echo "$PSQL_CMD"
+    eval "$PSQL_CMD"
+    echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
+    echo "fait"
+fi
+
 
 echo ""
 echo "Import du fichier BAL dans la base de données"
@@ -81,6 +109,16 @@ PSQL_CMD="$PSQL_BASE_CMD -c \"\\\\COPY bal_brute FROM '$BAL_FILE' WITH (delimite
 #echo "$PSQL_CMD"
 eval "$PSQL_CMD"
 
+
+
+if [ "$BAL_TO_TREAT" = "france" ]; then
+    # on recrée les indexes
+    echo "Création des indexes"
+    PSQL_CMD="$PSQL_BASE_CMD -f ./sql/create_indexes_bal_brute.sql"
+    # echo "$PSQL_CMD"
+    eval "$PSQL_CMD"
+    echo "fait"
+fi
 
 echo ""
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
