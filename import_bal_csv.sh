@@ -1,41 +1,91 @@
 #!/bin/sh
 set -e
 
+echo ""
+echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
+echo ""
+echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echo "  Import d'un fichier BAL"
+echo ""
+
 # lecture du fichier de configuration
-. config.sh
-
-
-PSQL_CMD="psql -U $POSTGRES_USERNAME -h $POSTGRES_HOST -p $POSTGRES_PORT -d $POSTGRES_DB"
+. ./config.sh
 
 # repertoire de travail
 BASEDIR=$(cd $(dirname $0) && pwd)
-# departement :
-#SOURCE_URL="https://adresse.data.gouv.fr/data/ban/adresses/latest/csv-bal/adresses-35.csv.gz"
-# france entiere : 
-SOURCE_URL="https://adresse.data.gouv.fr/data/ban/adresses/latest/csv-bal/adresses-france.csv.gz"
-DB_TABLE=bal_brute
-OUTPUT_FILE="$BASEDIR/in_bal_csv/bal.csv"
 
 
-echo "[$(date '+%d/%m/%Y %H:%M:%S')] START IMPORTING $DB_TABLE"
+# Initialisation de la variable BAL_TO_TREAT
+BAL_TO_TREAT="france"
 
-# supprime le fichier existant (à commmenter si on souhaite conserver le fichier existant)
-# rm "$OUTPUT_FILE" 
+# Vérification des arguments
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -dpt)
+            if [[ -n "$2" ]]; then
+                BAL_TO_TREAT="$2"
+                shift 2
+            else
+                echo "Erreur : L'argument pour -dpt est manquant."
+                exit 1
+            fi
+            ;;
+        *)
+            echo "Option inconnue : $1"
+            exit 1
+            ;;
+    esac
+done
 
-# ne retelecharge le fichier que s'il n'existe pas déjà, et le dezippe
-if [ ! -f "$OUTPUT_FILE" ]; then
-    echo "[$(date '+%d/%m/%Y %H:%M:%S')] DOWNLOAD $DB_TABLE"
-    wget --no-clobber --progress=bar:force:noscroll -q --show-progress $SOURCE_URL -O "$OUTPUT_FILE".gz
-    gzip -d "$OUTPUT_FILE".gz
-    echo "[$(date '+%d/%m/%Y %H:%M:%S')] DOWNLOAD FINISHED $DB_TABLE"
+if [ "$BAL_TO_TREAT" = "france" ]; then
+    echo "On va travailler sur la France entière"
+else
+    echo "On va travailler sur le département $BAL_TO_TREAT"
 fi
 
-# cree la table si elle n'existe pas dejà
-eval "$PSQL_CMD -f ./sql/create_table_bal.sql"
 
-# importe le fichier en base postgresql
-eval "$PSQL_CMD -c '\copy $DB_TABLE FROM $OUTPUT_FILE WITH (delimiter \";\", format csv, header true)'"
-echo "[$(date '+%d/%m/%Y %H:%M:%S')] END IMPORTING $DB_TABLE"
+echo ""
+
+BAL_URL="https://adresse.data.gouv.fr/data/ban/adresses/latest/csv-bal/adresses-$BAL_TO_TREAT.csv.gz"
+BAL_FILE="in_bal_csv/$BAL_TO_TREAT.csv"
+
+# on va télécharger que si un fichier BAL récent n'existe pas déjà dans le répertoire
+
+if [ ! -f "$BAL_FILE" ]; then
+    
+    echo "Téléchargement du fichier BAL"
+
+    echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
+    wget --no-clobber --progress=bar:force:noscroll -q --show-progress $BAL_URL -O "$BAL_FILE.gz"
+    gzip -d -f "$BAL_FILE.gz"
+    echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
+
+else
+    
+    echo "un fichier récent existe déjà : on ne le réimporte pas"
+    echo ""
+    echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    echo "  FINI"
+
+    # et on s'arrête là
+    exit 0
+fi
 
 
+echo ""
+echo "Import du fichier BAL dans la base de données"
+echo ""
+echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
 
+PSQL_CMD="$PSQL_BASE_CMD -c \"\\\\COPY bal_brute FROM '$BAL_FILE' WITH (delimiter ';', format csv, header true)\""
+echo "$PSQL_CMD"
+eval "$PSQL_CMD"
+
+
+echo ""
+echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echo "  FINI"
+echo ""
+echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
+echo ""
+echo ""
