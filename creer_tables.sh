@@ -20,6 +20,11 @@ PSQL_CMD="$PSQL_BASE_CMD -f ./sql/create_tables.sql"
 # echo "$PSQL_CMD"
 eval "$PSQL_CMD"
 
+# les indexes sur la table bal_brute
+PSQL_CMD="$PSQL_BASE_CMD -f ./sql/create_indexes_bal_brute.sql"
+# echo "$PSQL_CMD"
+eval "$PSQL_CMD"
+
 
 echo ""
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"

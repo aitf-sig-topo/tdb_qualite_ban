@@ -27,11 +27,7 @@ CREATE TABLE bal_brute
     date_der_maj date,
     certification_commune int
 );
-
-CREATE INDEX bal_brute_commune_insee_idx ON bal_brute (commune_insee);
-CREATE INDEX bal_brute_commune_nom_idx ON bal_brute (commune_nom);
-CREATE INDEX bal_brute_source_idx ON bal_brute (source);
-CREATE INDEX bal_brute_commune_date_der_maj_idx ON bal_brute (date_der_maj);
+-- les indexes de cette table sont dans un fichier dédié
 
 
 
