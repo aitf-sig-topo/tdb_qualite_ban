@@ -45,11 +45,48 @@ fi
 
 
 echo ""
+echo "Suppression des données pré-existantes"
+echo ""
 
-# script SQL de creation des indicateur
-PSQL_CMD="$PSQL_BASE_CMD -f ./sql/create_table_bal_indicateurs.sql"
-echo "$PSQL_CMD"
+# on vide la table sur le périmètre de travail
+if [ "$BAL_TO_TREAT" = "france" ]; then
+    # on va vider toute la table
+    SQL_DELETE="TRUNCATE TABLE bal_indicateurs ;"
+else
+    # on ne supprime que les données du département
+    SQL_DELETE="DELETE FROM bal_indicateurs WHERE LEFT(commune_insee, 2) = '$BAL_TO_TREAT';"
+fi
+
+PSQL_CMD="$PSQL_BASE_CMD -c \"$SQL_DELETE\""
+# echo "$PSQL_CMD"
 eval "$PSQL_CMD"
+echo "fait"
+
+
+
+echo ""
+echo "Calcul des indicateurs"
+echo ""
+# echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
+echo ""
+
+if [ "$BAL_TO_TREAT" = "france" ]; then
+    SQL_WHERE_CLAUSE=""
+else
+    SQL_WHERE_CLAUSE="AND LEFT(commune_insee, 2) = '$BAL_TO_TREAT'"
+fi
+
+# On charge le fichier SQL dans une variable
+SQL_MAJ=$(cat sql/maj_indicateurs.sql)
+
+# Remplacement de la clause WHERE
+SQL_COMPUTE=$(echo "$SQL_MAJ" | sed "s/#where_clause#/$SQL_WHERE_CLAUSE/g")
+
+# exécution
+PSQL_CMD="$PSQL_BASE_CMD -c \"$SQL_COMPUTE\""
+# echo "$PSQL_CMD"
+eval "$PSQL_CMD"
+echo "fait"
 
 
 echo ""

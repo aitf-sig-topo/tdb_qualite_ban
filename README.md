@@ -56,7 +56,7 @@ Attention, pour le fichier BAL France entière, l'import dure un petit quart d'h
 
 Une fois les 2 étapes précédentes réalisées, on peut générer la table des indicateurs qualité par commune : 
 
-    ./creer_table_bal_indicateurs.sh
+    ./calculer_indicateurs.sh
 
 Pour la france entière, le traitement dure une dizaine de minutes.
 

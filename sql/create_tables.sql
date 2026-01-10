@@ -34,18 +34,18 @@ CREATE TABLE bal_brute
 DROP TABLE IF EXISTS bal_indicateurs;
 
 CREATE TABLE bal_indicateurs (
-    indicateur_aggrege int4 NULL,
-    commune_nom text NOT NULL,
     commune_insee character(5) NOT NULL,
+    commune_nom text NOT NULL,
     nb_adresses_total int8 NULL,
     nb_adresses_certifiees int8 NULL,
     nb_adresses_source_commune int8 NULL,
     date_premiere_maj date NULL,
     date_derniere_maj date NULL,
-    duree_maj_en_nb_de_jour int4 NULL,
     nb_dates_distinctes int8 NULL,
+    duree_maj_en_nb_de_jour int4 NULL,
     nb_adresses_modifiees_recement int8 NULL,
     nb_geodoublons numeric NULL,
+    indicateur_aggrege int4 NULL,
     surface_commune_km2 float8 NULL,
     geom geometry(multipolygon, 2154) NULL
 );
