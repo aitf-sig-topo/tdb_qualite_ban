@@ -22,6 +22,14 @@ Voir le [README](installation/README.md) dans le répertoire `installation`.
 
 ## Utilisation
 
+### Création des tables
+
+Exécuter le script d'import :
+ 
+    ./creer_tables.sh
+
+
+
 ### Configuration du référentiel communal
 
 Les limites des communes sont nécessaires pour cartographier les indicateurs. 
