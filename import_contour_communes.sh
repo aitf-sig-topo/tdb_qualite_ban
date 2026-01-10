@@ -1,50 +1,77 @@
 #!/bin/sh
 set -e
 
+echo ""
+echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
+echo ""
+echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echo "  Création de la couche du référentiel communal"
+echo ""
+
 # lecture du fichier de configuration
-. config.sh
+. ./config.sh
 
 # repertoire de travail
 BASEDIR=$(cd $(dirname $0) && pwd)
-# contour france entiere  :
-SOURCE_URL="https://www.data.gouv.fr/api/1/datasets/r/00c0c560-3ad1-4a62-9a29-c34c98c3701e"
-DB_TABLE=commune_contour
-OUTPUT_FILE="$BASEDIR/in_bal_csv/commune_contour.geojson"
 
-echo "[$(date '+%d/%m/%Y %H:%M:%S')] START IMPORTING $DB_TABLE"
+
+echo ""
+echo "Téléchargement de la couche simplifiée data.gouv"
+
+# téléchargement
+SOURCE_URL="https://www.data.gouv.fr/api/1/datasets/r/00c0c560-3ad1-4a62-9a29-c34c98c3701e"
+OUTPUT_FILE="in_bal_csv/commune_contour.geojson"
+
 
 # supprime le fichier existant (à commmenter si on souhaite conserver le fichier existant)
 # rm "$OUTPUT_FILE" 
 
 # ne retelecharge le fichier que s'il n'existe pas déjà, et le dezippe
 if [ ! -f "$OUTPUT_FILE" ]; then
-	echo "[$(date '+%d/%m/%Y %H:%M:%S')] DOWNLOAD $DB_TABLE"
-	wget --no-clobber --progress=bar:force:noscroll -q --show-progress $SOURCE_URL -O "$OUTPUT_FILE"
-  #      gzip -d "$OUTPUT_FILE".gz
-	echo "[$(date '+%d/%m/%Y %H:%M:%S')] DOWNLOAD FINISHED $DB_TABLE"
+  echo "le fichier geojson n'existe pas --> on le télécharge"
+  # echo "[$(date '+%d/%m/%Y %H:%M:%S')] DOWNLOAD $DB_TABLE"
+  wget --no-clobber --progress=bar:force:noscroll -q --show-progress $SOURCE_URL -O "$OUTPUT_FILE"
+  # gzip -d "$OUTPUT_FILE".gz
+else
+  echo "le fichier geojson existe déjà"
 fi
 
 # importe le fichier en base postgresql  
 # -s_srs EPSG:2154 -t_srs EPSG:2154
 
-## enlève éventuelle données déjà présentes
-echo "suppression table des communes"
-psql_command="psql -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USERNAME -d $POSTGRES_DB -c 'DROP TABLE IF EXISTS commune_contour;'"
+echo ""
+echo "suppression couche pré-existante"
+
+DB_TABLE=commune_contour
+
+psql_command="psql -h $PG_HOST -p $PG_PORT -U $PG_USERNAME -d $PG_DB -c 'DROP TABLE IF EXISTS $DB_TABLE;'"
+# echo "$psql_command"
 eval "$psql_command"
 echo "fait"
 
 
-echo "chargement de la couche des communes"
+echo ""
+echo "Chargement de la couche en base"
+
 ogr2ogr_command="ogr2ogr -f \"PostgreSQL\" \
-PG:\"host=$POSTGRES_HOST port=$POSTGRES_PORT user=$POSTGRES_USERNAME password=$PGPASSWORD dbname=$POSTGRES_DB\" \
-$OUTPUT_FILE -nln $DB_TABLE -lco GEOMETRY_NAME=geom_org"
+PG:\"host=$PG_HOST port=$PG_PORT user=$PG_USERNAME dbname=$PG_DB\" \
+$OUTPUT_FILE -nln $DB_TABLE -lco GEOMETRY_NAME=geom_org -progress"
+# echo "$ogr2ogr_command"
 eval "$ogr2ogr_command"
-echo "chargement fait"
+echo "fait"
+echo ""
 
 
-# nettoie la géométrie des communes 
-eval "psql -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USERNAME -d $POSTGRES_DB -f ./sql/nettoie_table_contour_commune.sql"
+echo ""
+echo "Nettoyage de la géométrie"
+# On a du polygone et et du multipolygone donc on force en multipolygone
+eval "psql -h $PG_HOST -p $PG_PORT -U $PG_USERNAME -d $PG_DB -f ./sql/nettoie_table_contour_commune.sql"
 
-echo "[$(date '+%d/%m/%Y %H:%M:%S')] END IMPORTING $DB_TABLE"
 
-
+echo ""
+echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echo "  FINI"
+echo ""
+echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
+echo ""
+echo ""
