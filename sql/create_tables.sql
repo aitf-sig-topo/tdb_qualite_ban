@@ -36,6 +36,7 @@ DROP TABLE IF EXISTS bal_indicateurs;
 CREATE TABLE bal_indicateurs (
     commune_insee character(5) NOT NULL,
     commune_nom text NOT NULL,
+    classement text NOT NULL,
     nb_adresses_total int8 NULL,
     nb_adresses_certifiees int8 NULL,
     nb_adresses_source_commune int8 NULL,

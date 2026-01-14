@@ -1,6 +1,4 @@
 
-
-
 -- calcul des indicateurs a partir de la table bal_brute et copie du résultat dans une table bal_indicateurs
 WITH
 bal as ( 
@@ -108,6 +106,7 @@ indicateurs_tous as (
         coalesce(nb_adresse_modifiees.nb_adresses_modifiees_recement, 0) nb_adresses_modifiees_recement,
         coalesce(nb_adresses_geodoublon_par_commune.nb_adresses_geodoublon, 0) nb_geodoublons,
         public.st_area(geo_commune.geom)/1000000.0 surface_commune_km2,
+        classement.libdens7 classement,
         geo_commune.geom
     FROM
         indicateurs_de_base_par_commune indicateurs_de_base
@@ -117,6 +116,9 @@ indicateurs_tous as (
             INNER JOIN 
                 commune_contour geo_commune -- A MODIFIER SELON LA TABLE CONTENANT LA GEOMETRIE DES COMMUNES
                 on geo_commune.codgeo = indicateurs_de_base.commune_insee::text -- A MODIFIER SELON le nom du champs code insee de la commune
+            INNER JOIN
+                commune_classement classement -- table insee des classification par densite
+                on classement.codgeo = indicateurs_de_base.commune_insee::text 
 ),
 -- indicateur agrégé
 indicateurs_agrege AS (
@@ -156,7 +158,7 @@ indicateurs_agrege AS (
 )
 -- on insert dans la table
 INSERT INTO ban_qualite.bal_indicateurs
-    (commune_insee, commune_nom, 
+    (commune_insee, commune_nom, classement,
     nb_adresses_total, nb_adresses_certifiees, nb_adresses_source_commune,
     date_premiere_maj, date_derniere_maj, nb_dates_distinctes, 
     duree_maj_en_nb_de_jour, nb_adresses_modifiees_recement, 
@@ -164,7 +166,7 @@ INSERT INTO ban_qualite.bal_indicateurs
     indicateur_aggrege, 
     surface_commune_km2, geom)
 SELECT
-    commune_insee, commune_nom,
+    commune_insee, commune_nom, classement,
     nb_adresses_total, nb_adresses_certifiees, nb_adresses_source_commune,
     date_premiere_maj, date_derniere_maj, nb_dates_distinctes, 
     duree_maj_en_nb_de_jour, nb_adresses_modifiees_recement, 
