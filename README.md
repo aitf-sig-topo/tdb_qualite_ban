@@ -42,6 +42,11 @@ Exécuter le script d'import :
 
 /!\ Attention, pour le moment, les limites des communes avec arrondissements n'est pas récupéré dans le fichier insee.
 
+On importe également le classement INSEE des commune en 7 catégories de densité (https://www.insee.fr/fr/information/8571524). 
+Exécuter le script d'import : 
+
+    ./import_classement_communes.sh
+    
 
 ### Import des fichiers BAL
 
