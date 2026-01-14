@@ -99,3 +99,9 @@ Lancer ce script pour créer un point d'historisation des indicateurs (à lancer
     ./creer_historique.sh
 
 
+
+## Modèle de données
+
+![](images/db_diagram.png)
+
+
