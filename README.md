@@ -90,3 +90,12 @@ Le fichier résultat se trouve dans le dossier "out".
 On peut agréger les indicateurs en un seul, selon une pondération à affiner.
 L'indicateur aggrégé est calculé à la fin du script `create_table_bal_indicateurs.sql`.
 
+
+
+## Historisation
+
+Lancer ce script pour créer un point d'historisation des indicateurs (à lancer par cron 1x par mois) :
+
+    ./creer_historique.sh
+
+

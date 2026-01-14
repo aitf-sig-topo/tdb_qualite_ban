@@ -54,3 +54,34 @@ CREATE TABLE bal_indicateurs (
 CREATE UNIQUE INDEX bal_indicateurs_commune_insee_idx ON bal_indicateurs (commune_insee);
 CREATE INDEX bal_indicateurs_geom_idx ON bal_indicateurs USING gist (geom);
 
+
+
+
+DROP TABLE IF EXISTS bal_indicateurs_hist;
+
+CREATE TABLE bal_indicateurs_hist (
+    hist_date date NOT NULL,
+    commune_insee character(5) NOT NULL,
+    commune_nom text NOT NULL,
+    classement text NOT NULL,
+    nb_adresses_total int8 NULL,
+    nb_adresses_certifiees int8 NULL,
+    nb_adresses_source_commune int8 NULL,
+    date_premiere_maj date NULL,
+    date_derniere_maj date NULL,
+    nb_dates_distinctes int8 NULL,
+    duree_maj_en_nb_de_jour int4 NULL,
+    nb_adresses_modifiees_recement int8 NULL,
+    nb_geodoublons numeric NULL,
+    indicateur_aggrege int4 NULL,
+    surface_commune_km2 float8 NULL,
+    geom geometry(multipolygon, 2154) NULL
+);
+
+ALTER TABLE bal_indicateurs_hist ADD CONSTRAINT bal_indicateurs_hist_pk PRIMARY KEY (commune_insee,hist_date);
+CREATE INDEX bal_indicateurs_hist_commune_insee_idx ON bal_indicateurs_hist (commune_insee);
+CREATE INDEX bal_indicateurs_hist_geom_idx ON bal_indicateurs_hist USING gist (geom);
+
+
+
+
