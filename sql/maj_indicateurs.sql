@@ -126,28 +126,35 @@ indicateurs_agrege AS (
         -- indicateur agrégé
         round( 
             --modifications recentes
-            case when "nb_adresses_modifiees_recement" = 0 then 0 else
-              ( greatest( coalesce(log(10, "nb_adresses_modifiees_recement" ),0),0) * 5  )
+            case when classement in ('Rural à habitat dispersé', 'Rural à habitat très dispersé' ) then 
+                ( greatest( coalesce(log(10, "nb_adresses_modifiees_recement" + 0.00001 ),0),0) * 5  ) * 1.40
+            else 
+                ( greatest( coalesce(log(10, "nb_adresses_modifiees_recement" + 0.00001 ),0),0) * 5  ) * 1.0
             end
             +
             -- 100% modifie recemment, petite penalite car s'apparente a une mise a jour en masse sans distinction
             case when  "nb_adresses_modifiees_recement" !=  "nb_adresses_total" then 0 else -3 end
             +
             -- duree des mises à jour, plus les mises a sont etalee dans le temps, plus la base est a priori vivante
-            case when "duree_maj_en_nb_de_jour" = 0 then 0 else
-              ( greatest( coalesce(log(180,"duree_maj_en_nb_de_jour"),0),0) * 2 )
-            end
+           ( greatest( coalesce(log(180,"duree_maj_en_nb_de_jour" + 0.00001 ),0),0) * 9 )  * 0.5
             + 
             -- nombre de date distinctes de mises à jour, plus il y en a, plus la mise a jour est reguliere et suivie
-            case when  "nb_dates_distinctes" = 0 then 0 else
-              ( greatest( coalesce(log( 5, "nb_dates_distinctes"),0),0) * 5 )
+            case when classement in ('Rural à habitat dispersé', 'Rural à habitat très dispersé' ) then 
+              ( greatest( coalesce(log( 5, "nb_dates_distinctes" + 0.0001 ),0),0) * 6 )   * 2.0
+            else 
+              ( greatest( coalesce(log( 5, "nb_dates_distinctes" + 0.0001 ),0),0) * 6 )   * 1.0
             end
             +
-            ( "nb_adresses_certifiees" * 1.0 /  "nb_adresses_total"   * 20 )
-            -- penalite s'il y a des geodoublons
-            - 
-            case when "nb_geodoublons" = 0 then 0 else
-              ( greatest( coalesce(log(10, "nb_geodoublons" ),0),0)  )
+            -- nombre d'adresses certifiées
+            ( "nb_adresses_certifiees" * 1.0 /  "nb_adresses_total" * 10.0 )  * 2.0
+            -- pénalite s'il y a des geodoublons
+            -  
+            case when classement in ('Rural à habitat dispersé', 'Rural à habitat très dispersé' ) then 
+              ( greatest( coalesce(log(10, "nb_geodoublons" + 0.00001 ),0),0) * 7.0  )  *  3.0
+            when classement in ('Bourgs ruraux ', 'Ceintures urbaines', 'Petites villes' ) then
+              ( greatest( coalesce(log(10, "nb_geodoublons" + 0.00001 ),0),0) * 7.0  )  *  1.7
+            else
+              ( greatest( coalesce(log(10, "nb_geodoublons" + 0.00001 ),0),0) * 7.0  )  *  1.0
             end
             +
             (  "nb_adresses_source_commune"  * 1.0 /  "nb_adresses_total"   * 5 )
