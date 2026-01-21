@@ -7,11 +7,11 @@ ALTER TABLE IF EXISTS commune_contour
 
 
 -- copie géometrie non typée vers geométrie typée
-UPDATE commune_contour set geom = ST_Multi(geom_org); 
+UPDATE commune_contour set geom = ST_Multi(st_transform(geom_org, 2154)); 
 
 -- supprime colonne géométrie non typée
 ALTER TABLE commune_contour drop column geom_org ;
 
 -- des indexes
-CREATE UNIQUE INDEX commune_contour_codgeo_idx ON commune_contour (codgeo);
+CREATE UNIQUE INDEX commune_contour_code_insee_idx ON commune_contour (code_insee);
 CREATE INDEX commune_contour_geom_idx ON commune_contour USING gist (geom);
