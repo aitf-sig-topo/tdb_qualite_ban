@@ -106,7 +106,7 @@ indicateurs_tous as (
         coalesce(nb_adresse_modifiees.nb_adresses_modifiees_recement, 0) nb_adresses_modifiees_recement,
         coalesce(nb_adresses_geodoublon_par_commune.nb_adresses_geodoublon, 0) nb_geodoublons,
         public.st_area(geo_commune.geom)/1000000.0 surface_commune_km2,
-        classement.libdens7 classement,
+        geo_commune.classement,
         geo_commune.geom
     FROM
         indicateurs_de_base_par_commune indicateurs_de_base
@@ -115,10 +115,7 @@ indicateurs_tous as (
             LEFT JOIN nb_adresses_geodoublon_par_commune on nb_adresses_geodoublon_par_commune.commune_insee = indicateurs_de_base.commune_insee
             INNER JOIN 
                 commune_contour geo_commune -- A MODIFIER SELON LA TABLE CONTENANT LA GEOMETRIE DES COMMUNES
-                on geo_commune.codgeo = indicateurs_de_base.commune_insee::text -- A MODIFIER SELON le nom du champs code insee de la commune
-            INNER JOIN
-                commune_classement classement -- table insee des classification par densite
-                on classement.codgeo = indicateurs_de_base.commune_insee::text 
+                on geo_commune.code_insee = indicateurs_de_base.commune_insee::text -- A MODIFIER SELON le nom du champs code insee de la commune
 ),
 -- indicateur agrégé
 indicateurs_agrege AS (
