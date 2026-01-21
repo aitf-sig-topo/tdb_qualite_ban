@@ -105,7 +105,7 @@ indicateurs_tous as (
         coalesce(nb_dates_distinctes_par_commune.nb_dates_distinctes, 0) nb_dates_distinctes,
         coalesce(nb_adresse_modifiees.nb_adresses_modifiees_recement, 0) nb_adresses_modifiees_recement,
         coalesce(nb_adresses_geodoublon_par_commune.nb_adresses_geodoublon, 0) nb_geodoublons,
-        public.st_area(geo_commune.geom)/1000000.0 surface_commune_km2,
+        round(geo_commune.superficie_cadastrale / 100, 1) surface_commune_km2, -- surface en ha dans referentiel cadastral
         geo_commune.classement,
         geo_commune.geom
     FROM
