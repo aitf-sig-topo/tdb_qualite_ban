@@ -32,9 +32,11 @@ Exécuter le script d'import :
 
 ### Configuration du référentiel communal
 
-Les limites des communes sont nécessaires pour cartographier les indicateurs. 
+Les limites des communes sont nécessaires pour cartographier les indicateurs. On a également besoin du classement par densité des communes pour affiner l'indicateur aggrégé.
 
-On utilise pour cela le jeu de données ["Contours des communes de France simplifié" disponible sur etalab](https://www.data.gouv.fr/datasets/contours-des-communes-de-france-simplifie-avec-regions-et-departement-doutre-mer-rapproches).
+- IGN pour le contour des communes : https://geoservices.ign.fr/telechargement-api/ADMIN-EXPRESS-COG-CARTO-PE?zone=FXX&format=GPKG
+
+- INSEE pour le classement par densité des communes : https://www.insee.fr/fr/information/8571524
 
 Exécuter le script d'import :
  
@@ -42,10 +44,6 @@ Exécuter le script d'import :
 
 /!\ Attention, pour le moment, les limites des communes avec arrondissements n'est pas récupéré dans le fichier insee.
 
-On importe également le classement INSEE des commune en 7 catégories de densité (https://www.insee.fr/fr/information/8571524). 
-Exécuter le script d'import : 
-
-    ./import_classement_communes.sh
     
 
 ### Import des fichiers BAL
