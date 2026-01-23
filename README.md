@@ -56,6 +56,10 @@ Lancer le script pour importer la France entière :
 Ou sur un seul département :
 
     ./import_bal_csv.sh -dpt 29
+    
+Pour importer une date précise (voir liste des date ici : https://adresse.data.gouv.fr/data/ban/adresses ) 
+
+    ./import_bal_csv.sh -date 2023-01-04
 
 Attention, pour le fichier BAL France entière, l'import dure un petit quart d'heure.
 

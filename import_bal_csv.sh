@@ -17,8 +17,12 @@ BASEDIR=$(cd $(dirname $0) && pwd)
 # variable indiquant qu'on ne telecharge pas le fichier si un autre suffisamment récent est déjà présent (la variable indique la durée de rétention du fichier en secondes)
 MAX_AGE_SECONDS=$((24 * 3600))
 
-# Initialisation de la variable BAL_TO_TREAT
+# Initialisation de la variable BAL_TO_TREAT : par défaut "france", si on souhaite un département particulier, rajouter la variable -dpt XX au lancement du script
 BAL_TO_TREAT="france"
+
+# date de récupération souhaité, voir https://adresse.data.gouv.fr/data/ban/adresses pour la liste des date disponibles
+BAL_DATE="latest"
+
 
 # Vérification des arguments
 while [ $# -gt 0 ]; do
@@ -32,12 +36,22 @@ while [ $# -gt 0 ]; do
                 exit 1
             fi
             ;;
+        -date)
+            if [ -n "$2" ]; then
+                BAL_DATE="$2"
+                shift 2
+            else
+                echo "Erreur : L'argument pour -date est manquant."
+                exit 1
+            fi
+            ;;        
         *)
             echo "Option inconnue : $1"
             exit 1
             ;;
     esac
 done
+
 
 if [ "$BAL_TO_TREAT" = "france" ]; then
     echo "On va travailler sur la France entière"
@@ -48,14 +62,14 @@ fi
 
 echo ""
 
-BAL_URL="https://adresse.data.gouv.fr/data/ban/adresses/latest/csv-bal/adresses-$BAL_TO_TREAT.csv.gz"
+BAL_URL="https://adresse.data.gouv.fr/data/ban/adresses/$BAL_DATE/csv-bal/adresses-$BAL_TO_TREAT.csv.gz"
 BAL_FILE="in_bal_csv/$BAL_TO_TREAT.csv"
 
 # on va télécharger que si un fichier BAL récent n'existe pas déjà dans le répertoire
 
 if [ ! -f "$BAL_FILE" ]; then
     
-    echo "Téléchargement du fichier BAL"
+    echo "Téléchargement du fichier BAL $BAL_DATE" 
 
     echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
     wget --no-clobber --progress=bar:force:noscroll -q --show-progress $BAL_URL -O "$BAL_FILE.gz"
@@ -77,15 +91,17 @@ else
         echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
     else
         echo "Le fichier a été téléchargé récemment. Aucun téléchargement nécessaire."
+        
+        # et on s'arrête là
+        exit 0
+        echo ""
+        echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+        echo "  FINI"
     fi
 
 
-    echo ""
-    echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    echo "  FINI"
 
-    # et on s'arrête là
-    exit 0
+    
 fi
 
 echo ""
@@ -124,7 +140,7 @@ echo ""
 echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
 
 PSQL_CMD="$PSQL_BASE_CMD -c \"\\\\COPY bal_brute FROM '$BAL_FILE' WITH (delimiter ';', format csv, header true)\""
-#echo "$PSQL_CMD"
+echo "$PSQL_CMD"
 eval "$PSQL_CMD"
 echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
 echo "fait"
