@@ -2,16 +2,16 @@
 -- script lancé après l'import ogr2ogr du geojson des contours communaux
 
 -- rajoute colomne geometrie typee
-ALTER TABLE IF EXISTS commune_contour
+ALTER TABLE IF EXISTS referentiel_communal
         ADD COLUMN geom public.geometry(MultiPolygon,2154);
 
 
 -- copie géometrie non typée vers geométrie typée
-UPDATE commune_contour set geom = ST_Multi(st_transform(geom_org, 2154)); 
+UPDATE referentiel_communal set geom = ST_Multi(st_transform(geom_org, 2154)); 
 
 -- supprime colonne géométrie non typée
-ALTER TABLE commune_contour drop column geom_org ;
+ALTER TABLE referentiel_communal drop column geom_org ;
 
 -- des indexes
-CREATE UNIQUE INDEX commune_contour_code_insee_idx ON commune_contour (code_insee);
-CREATE INDEX commune_contour_geom_idx ON commune_contour USING gist (geom);
+CREATE UNIQUE INDEX referentiel_communal_code_insee_idx ON referentiel_communal (code_insee);
+CREATE INDEX referentiel_communal_geom_idx ON referentiel_communal USING gist (geom);

@@ -114,7 +114,7 @@ indicateurs_tous as (
             LEFT JOIN nb_adresse_modifiees on nb_adresse_modifiees.commune_insee = indicateurs_de_base.commune_insee
             LEFT JOIN nb_adresses_geodoublon_par_commune on nb_adresses_geodoublon_par_commune.commune_insee = indicateurs_de_base.commune_insee
             INNER JOIN 
-                commune_contour geo_commune -- A MODIFIER SELON LA TABLE CONTENANT LA GEOMETRIE DES COMMUNES
+                referentiel_communal geo_commune -- A MODIFIER SELON LA TABLE CONTENANT LA GEOMETRIE DES COMMUNES
                 on geo_commune.code_insee = indicateurs_de_base.commune_insee::text -- A MODIFIER SELON le nom du champs code insee de la commune
 ),
 -- indicateur agrégé
