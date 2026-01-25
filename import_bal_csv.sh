@@ -63,7 +63,7 @@ fi
 echo ""
 
 BAL_URL="https://adresse.data.gouv.fr/data/ban/adresses/$BAL_DATE/csv-bal/adresses-$BAL_TO_TREAT.csv.gz"
-BAL_FILE="in_bal_csv/$BAL_TO_TREAT.csv"
+BAL_FILE="in/bal_csv/$BAL_TO_TREAT.csv"
 
 # on va télécharger que si un fichier BAL récent n'existe pas déjà dans le répertoire
 

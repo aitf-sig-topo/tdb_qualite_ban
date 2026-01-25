@@ -14,7 +14,7 @@ echo ""
 # repertoire de travail
 BASEDIR=$(cd $(dirname $0) && pwd)
 # fichier de donnee
-SOURCE_DIR="$BASEDIR/in_bal_csv"
+SOURCE_DIR="$BASEDIR/in/referentiel"
 SOURCE_FILE="$SOURCE_DIR/referentiel_communal"
 
 echo "decompression du fichier referentiel communal"
