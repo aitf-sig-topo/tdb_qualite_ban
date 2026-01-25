@@ -61,6 +61,11 @@ Pour importer une date précise (voir liste des date ici : [https://adresse.data
 
     ./import_bal_csv.sh -date 2023-01-04
 
+On peut cumuler les arguements 'département' et 'date de la BAL' :
+
+    ./import_bal_csv.sh -dpt 29 -date 2023-01-04
+
+
 Attention, pour le fichier BAL France entière, l'import dure un petit quart d'heure.
 
 
@@ -72,7 +77,7 @@ Une fois les 2 étapes précédentes réalisées, on peut générer la table des
 
 Pour la france entière, le traitement dure une dizaine de minutes.
 
-Ou pour mettre un jour un seul département :
+Ou pour mettre à jour un seul département :
 
     ./calculer_indicateurs.sh -dpt 29
 
