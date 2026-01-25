@@ -2,7 +2,7 @@
 
 
 
-## Objectif : décrire la vitalité des BAL
+## Objectif : décrire la vitalité des données adresses, à l'échelle communale
 
 On se propose de décrire l'activité d'une BAL à l'aide de plusieurs indicateurs complémentaires.
 
@@ -35,9 +35,9 @@ Exécuter le script d'import :
 
 Les limites des communes sont nécessaires pour cartographier les indicateurs. On a également besoin du classement par densité des communes pour affiner l'indicateur aggrégé.
 
-- IGN pour le contour des communes : https://geoservices.ign.fr/telechargement-api/ADMIN-EXPRESS-COG-CARTO-PE?zone=FXX&format=GPKG
+- IGN pour le contour des communes : [https://geoservices.ign.fr/telechargement-api/ADMIN-EXPRESS-COG-CARTO-PE?zone=FXX&format=GPKG](https://geoservices.ign.fr/telechargement-api/ADMIN-EXPRESS-COG-CARTO-PE?zone=FXX&format=GPKG)
 
-- INSEE pour le classement par densité des communes : https://www.insee.fr/fr/information/8571524
+- INSEE pour le classement par densité des communes : [https://www.insee.fr/fr/information/8571524](https://geoservices.ign.fr/telechargement-api/ADMIN-EXPRESS-COG-CARTO-PE?zone=FXX&format=GPKG)
 
 Exécuter le script d'import :
  
@@ -57,7 +57,7 @@ Ou sur un seul département :
 
     ./import_bal_csv.sh -dpt 29
     
-Pour importer une date précise (voir liste des date ici : https://adresse.data.gouv.fr/data/ban/adresses ) 
+Pour importer une date précise (voir liste des date ici : [https://adresse.data.gouv.fr/data/ban/adresses](https://geoservices.ign.fr/telechargement-api/ADMIN-EXPRESS-COG-CARTO-PE?zone=FXX&format=GPKG)) 
 
     ./import_bal_csv.sh -date 2023-01-04
 
