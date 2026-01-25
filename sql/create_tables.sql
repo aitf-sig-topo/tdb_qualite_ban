@@ -47,7 +47,7 @@ CREATE TABLE bal_indicateurs (
     nb_adresses_modifiees_recement int8 NULL,
     nb_geodoublons numeric NULL,
     indicateur_aggrege int4 NULL,
-    surface_commune_km2 float8 NULL,
+    surface_commune_km2 int4 NULL,
     geom geometry(multipolygon, 2154) NULL
 );
 
@@ -74,7 +74,7 @@ CREATE TABLE bal_indicateurs_hist (
     nb_adresses_modifiees_recement int8 NULL,
     nb_geodoublons numeric NULL,
     indicateur_aggrege int4 NULL,
-    surface_commune_km2 float8 NULL,
+    surface_commune_km2 int4 NULL,
     geom geometry(multipolygon, 2154) NULL
 );
 
