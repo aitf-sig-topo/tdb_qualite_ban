@@ -41,7 +41,7 @@ Les limites des communes sont nécessaires pour cartographier les indicateurs. O
 
 Exécuter le script d'import :
  
-    ./import_contour_communes.sh
+    ./import_referentiel_communal.sh
 
 /!\ Attention, pour le moment, les limites des communes avec arrondissements n'est pas récupéré dans le fichier insee.
 

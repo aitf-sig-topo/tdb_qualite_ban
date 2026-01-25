@@ -33,7 +33,7 @@ fi
 echo ""
 echo "suppression couche pré-existante"
 
-DB_TABLE=commune_contour
+DB_TABLE=referentiel_communal
 
 PSQL_CMD="$PSQL_BASE_CMD -c 'DROP TABLE IF EXISTS $DB_TABLE;'"
 # echo "$PSQL_CMD"
@@ -56,7 +56,7 @@ echo ""
 echo ""
 echo "Nettoyage de la géométrie"
 # On a du polygone et et du multipolygone donc on force en multipolygone
-PSQL_CMD="$PSQL_BASE_CMD -f ./sql/nettoie_table_contour_commune.sql"
+PSQL_CMD="$PSQL_BASE_CMD -f ./sql/nettoyage_referentiel_communal.sql"
 # echo "$PSQL_CMD"
 eval "$PSQL_CMD"
 echo "fait"
