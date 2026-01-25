@@ -37,7 +37,7 @@ Les limites des communes sont nécessaires pour cartographier les indicateurs. O
 
 - IGN pour le contour des communes : [https://geoservices.ign.fr/telechargement-api/ADMIN-EXPRESS-COG-CARTO-PE?zone=FXX&format=GPKG](https://geoservices.ign.fr/telechargement-api/ADMIN-EXPRESS-COG-CARTO-PE?zone=FXX&format=GPKG)
 
-- INSEE pour le classement par densité des communes : [https://www.insee.fr/fr/information/8571524](https://geoservices.ign.fr/telechargement-api/ADMIN-EXPRESS-COG-CARTO-PE?zone=FXX&format=GPKG)
+- INSEE pour le classement par densité des communes : [https://www.insee.fr/fr/information/8571524](https://www.insee.fr/fr/information/8571524)
 
 Exécuter le script d'import :
  
@@ -57,7 +57,7 @@ Ou sur un seul département :
 
     ./import_bal_csv.sh -dpt 29
     
-Pour importer une date précise (voir liste des date ici : [https://adresse.data.gouv.fr/data/ban/adresses](https://geoservices.ign.fr/telechargement-api/ADMIN-EXPRESS-COG-CARTO-PE?zone=FXX&format=GPKG)) 
+Pour importer une date précise (voir liste des date ici : [https://adresse.data.gouv.fr/data/ban/adresses](https://adresse.data.gouv.fr/data/ban/adresses)) 
 
     ./import_bal_csv.sh -date 2023-01-04
 
