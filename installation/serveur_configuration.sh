@@ -1,27 +1,28 @@
 #!/bin/sh
 
 
+# Récupérer l'utilisateur courant
+CURRENT_USER=$(whoami)
+
 # Créer un groupe dédié
-echo "Création du groupe aitf"
-sudo groupadd aitf
+echo "Création du groupe aitf..."
+sudo groupadd aitf 2>/dev/null || echo "Le groupe 'aitf' existe déjà."
 
-# Demande à l'utilisateur de saisir une liste de comptes séparés par des espaces
-read -p "Entrez la liste des utilisateurs à ajouter au groupe 'aitf' (séparés par des espaces) : " users
-
-# Boucle sur chaque utilisateur
-for user in $users; do
-    echo "Ajout de $user au groupe aitf..."
-    sudo usermod -aG aitf "$user"
-    echo "Fait pour $user."
-done
+# Ajouter l'utilisateur courant au groupe aitf
+echo "Ajout de $CURRENT_USER au groupe aitf..."
+sudo usermod -aG aitf "$CURRENT_USER"
 
 
 # création du répertoire du projet
 sudo mkdir /srv/aitf
  
 # permissions
-sudo chown -R :aitf /srv/aitf
-sudo chmod -R 775 /srv/aitf
+sudo chown -R nobody:aitf /srv/aitf/
+sudo chmod -R 775 /srv/aitf/
+
+# Appliquer setgid pour que les nouveaux fichiers appartiennent au groupe aitf
+sudo chmod g+s /srv/aitf
+
 
 echo "clone du projet..."
 
