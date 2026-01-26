@@ -12,6 +12,10 @@ sudo groupadd aitf 2>/dev/null || echo "Le groupe 'aitf' existe déjà."
 echo "Ajout de $CURRENT_USER au groupe aitf..."
 sudo usermod -aG aitf "$CURRENT_USER"
 
+# pour prise en compte immédiate
+newgrp aitf
+# la commande inverse : gpasswd -d $CURRENT_USER aitf
+
 
 # création du répertoire du projet
 sudo mkdir /srv/aitf
