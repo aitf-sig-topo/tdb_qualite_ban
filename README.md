@@ -113,9 +113,9 @@ Par exemple, pour l'indicateur "nombre de date distinctes de mises à jour", on 
 On l'explique ainsi : 
 
 - on applique une fonction logarithmique à l'indicateur, pour masquer l'effet d'échelle. On prend ici une base 5 pour le logarithme, car on considère que 5 dates distinctes de mise à jour est déjà significatif d'une commune qui a oeuvré pour sa BAL avec plus d'attention qu'une commune qui n'en a aucune 
-- L'ajout de 0.0001 sert juste à éviter de calculer un logarithme de zéro, qui renverrai une erreur
+- L'ajout de 0.0001 sert juste à éviter de calculer un logarithme de zéro, qui renverrait une erreur
 - Le "greatest" sert à donner la valeur 0 plutôt qu'une valeur négative, pour ne pas déséquilibrer la pondération.
-- le coefficien 6 sert à ramener cet indicateur entre approximativement 0 et 10.
+- le coefficient 6 sert à ramener cet indicateur entre approximativement 0 et 10.
 - On distingue les communes selon leur classement de densité pour appliquer un coefficient plus fort à l'habitat rural dispersé. En effet la valeur moyenne de cet indicateur dans ce type de commune est statistiquement plus faible du fait d'une plus grande stabilité des adresses. Pour ne pas pénaliser ce type de commmune, on multiplie donc par 2 cet indicateur.
 
 Les autres indicateurs sont construits de la même façon dans le code SQL, et l'indicateur aggrégé est donc la somme du total.

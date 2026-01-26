@@ -167,7 +167,7 @@ INSERT INTO ban_qualite.bal_indicateurs
     date_premiere_maj, date_derniere_maj, nb_dates_distinctes, 
     duree_maj_en_nb_de_jour, nb_adresses_modifiees_recement, 
     nb_geodoublons, 
-    indicateur_aggrege, 
+    indicateur_aggrege,
     surface_commune_km2, geom)
 SELECT
     commune_insee, commune_nom, classement,
@@ -175,7 +175,7 @@ SELECT
     date_premiere_maj, date_derniere_maj, nb_dates_distinctes, 
     duree_maj_en_nb_de_jour, nb_adresses_modifiees_recement, 
     nb_geodoublons, 
-    indicateur_aggrege, 
+    least( greatest(indicateur_aggrege, 0), 100),  -- limite indicateur entre 0 et 100 , 
     surface_commune_km2, geom
 FROM indicateurs_agrege a
 ;
