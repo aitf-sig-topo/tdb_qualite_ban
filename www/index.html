@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte Indicateurs Qualité BAN</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css">
+    <script src="https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        #map {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .toc {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            z-index: 1000;
+            min-width: 250px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+
+        .toc h3 {
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #333;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 8px;
+        }
+
+        .toc-layer {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .toc-layer-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .toc-layer-header input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .toc-layer-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        .toc-legend {
+            margin-left: 28px;
+            padding-top: 8px;
+        }
+
+        .toc-legend-item {
+            display: flex;
+            align-items: center;
+            margin: 4px 0;
+            font-size: 11px;
+            color: #555;
+        }
+
+        .toc-legend-color {
+            width: 25px;
+            height: 15px;
+            margin-right: 6px;
+            border: 1px solid #333;
+            flex-shrink: 0;
+        }
+
+        .layer-switcher {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            z-index: 1000;
+        }
+
+        .layer-switcher h3 {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .layer-switcher label {
+            display: block;
+            margin: 8px 0;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .layer-switcher input[type="radio"] {
+            margin-right: 8px;
+        }
+
+        #info-panel {
+            position: absolute;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.3);
+            transition: right 0.3s ease-in-out;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        #info-panel.open {
+            right: 0;
+        }
+
+        .panel-header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .panel-header h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .close-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .panel-content {
+            padding: 20px;
+        }
+
+        .info-item {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <div class="toc">
+        <h3>Couches</h3>
+        
+        <div class="toc-layer">
+            <div class="toc-layer-header">
+                <input type="radio" name="layer" id="layer-indicateur" checked onchange="toggleLayer('indicateur')">
+                <label for="layer-indicateur" class="toc-layer-name">Indicateur agrégé</label>
+            </div>
+            <div class="toc-legend">
+                <div class="toc-legend-item">
+                    <div class="toc-legend-color" style="background-color: rgb(215,25,28);"></div>
+                    <span>-1000 - 24</span>
+                </div>
+                <div class="toc-legend-item">
+                    <div class="toc-legend-color" style="background-color: rgb(253,174,97);"></div>
+                    <span>24 - 34</span>
+                </div>
+                <div class="toc-legend-item">
+                    <div class="toc-legend-color" style="background-color: rgb(255,255,191);"></div>
+                    <span>34 - 49</span>
+                </div>
+                <div class="toc-legend-item">
+                    <div class="toc-legend-color" style="background-color: rgb(171,221,164);"></div>
+                    <span>49 - 65</span>
+                </div>
+                <div class="toc-legend-item">
+                    <div class="toc-legend-color" style="background-color: rgb(41,167,53);"></div>
+                    <span>65 - 1000</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="toc-layer">
+            <div class="toc-layer-header">
+                <input type="radio" name="layer" id="layer-geodoublons" onchange="toggleLayer('geodoublons')">
+                <label for="layer-geodoublons" class="toc-layer-name">Géodoublons</label>
+            </div>
+            <div class="toc-legend">
+                <div class="toc-legend-item">
+                    <div class="toc-legend-color" style="background-color: rgb(41,167,53);"></div>
+                    <span>0 - 1</span>
+                </div>
+                <div class="toc-legend-item">
+                    <div class="toc-legend-color" style="background-color: rgb(171,221,164);"></div>
+                    <span>1 - 10</span>
+                </div>
+                <div class="toc-legend-item">
+                    <div class="toc-legend-color" style="background-color: rgb(255,255,191);"></div>
+                    <span>10 - 49</span>
+                </div>
+                <div class="toc-legend-item">
+                    <div class="toc-legend-color" style="background-color: rgb(253,174,97);"></div>
+                    <span>49 - 100</span>
+                </div>
+                <div class="toc-legend-item">
+                    <div class="toc-legend-color" style="background-color: rgb(215,25,28);"></div>
+                    <span>100 - 1000000</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layer-switcher">
+        <h3>Fonds de plan</h3>
+        <label>
+            <input type="radio" name="basemap" value="osm">
+            OpenStreetMap
+        </label>
+        <label>
+            <input type="radio" name="basemap" value="ign" checked>
+            IGN
+        </label>
+        <label>
+            <input type="radio" name="basemap" value="piano">
+            Piano
+        </label>
+    </div>
+
+    <div id="info-panel">
+        <div class="panel-header">
+            <h2>Informations</h2>
+            <button class="close-btn" onclick="closePanel()">×</button>
+        </div>
+        <div class="panel-content" id="panel-content">
+            <p style="color: #999;">Cliquez sur un élément de la carte pour voir les détails.</p>
+        </div>
+    </div>
+
+    <script>
+        // Fonction de style pour l'indicateur agrégé
+        function getIndicateurStyle(feature) {
+            const indicateur = feature.get('indicateur_aggrege');
+            let fillColor;
+
+            if (indicateur < 24) {
+                fillColor = 'rgba(215, 25, 28, 0.6)';
+            } else if (indicateur < 34) {
+                fillColor = 'rgba(253, 174, 97, 0.6)';
+            } else if (indicateur < 49) {
+                fillColor = 'rgba(255, 255, 191, 0.6)';
+            } else if (indicateur < 65) {
+                fillColor = 'rgba(171, 221, 164, 0.6)';
+            } else {
+                fillColor = 'rgba(41, 167, 53, 0.6)';
+            }
+
+            return new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: fillColor
+                }),
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(35, 35, 35, 1)',
+                    width: 0.5
+                })
+            });
+        }
+
+        // Fonction de style pour les géodoublons
+        function getGeodoublonsStyle(feature) {
+            const nb_geodoublons = feature.get('nb_geodoublons');
+            let fillColor;
+
+            if (nb_geodoublons <= 1) {
+                fillColor = 'rgba(41, 167, 53, 0.6)';
+            } else if (nb_geodoublons <= 10) {
+                fillColor = 'rgba(171, 221, 164, 0.6)';
+            } else if (nb_geodoublons <= 49) {
+                fillColor = 'rgba(255, 255, 191, 0.6)';
+            } else if (nb_geodoublons <= 100) {
+                fillColor = 'rgba(253, 174, 97, 0.6)';
+            } else {
+                fillColor = 'rgba(215, 25, 28, 0.6)';
+            }
+
+            return new ol.style.Style({
+                fill: new ol.style.Fill({
+                    color: fillColor
+                }),
+                stroke: new ol.style.Stroke({
+                    color: 'rgba(35, 35, 35, 1)',
+                    width: 0.5
+                })
+            });
+        }
+
+        // Création des couches de fond
+        const osmLayer = new ol.layer.Tile({
+            source: new ol.source.OSM(),
+            visible: false
+        });
+
+        const ignLayer = new ol.layer.Tile({
+            source: new ol.source.WMTS({
+                url: 'https://data.geopf.fr/wmts',
+                layer: 'GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2',
+                matrixSet: 'PM',
+                format: 'image/png',
+                projection: 'EPSG:3857',
+                tileGrid: new ol.tilegrid.WMTS({
+                    origin: [-20037508, 20037508],
+                    resolutions: [156543.03392804103, 78271.5169640205, 39135.75848201024, 19567.87924100512, 9783.93962050256, 4891.96981025128, 2445.98490512564, 1222.99245256282, 611.49622628141, 305.7481131407048, 152.8740565703525, 76.43702828517624, 38.21851414258813, 19.10925707129406, 9.554628535647032, 4.777314267823516, 2.388657133911758, 1.194328566955879, 0.5971642834779395],
+                    matrixIds: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18']
+                }),
+                style: 'normal',
+                attributions: 'IGN-F/Géoportail'
+            }),
+            visible: true
+        });
+
+        const pianoLayer = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url: 'https://a.piano.tiles.quaidorsay.fr/fr/{z}/{x}/{y}.png',
+                attributions: 'Piano - Quai d\'Orsay'
+            }),
+            visible: false
+        });
+
+        // Couche vectorielle - Indicateur agrégé
+        const indicateurLayer = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                url: 'data/bal_indicateurs.geojson',
+                format: new ol.format.GeoJSON()
+            }),
+            style: getIndicateurStyle,
+            visible: true
+        });
+
+        // Couche vectorielle - Géodoublons
+        const geodoublonsLayer = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                url: 'data/bal_indicateurs.geojson',
+                format: new ol.format.GeoJSON()
+            }),
+            style: getGeodoublonsStyle,
+            visible: false
+        });
+
+        // Création de la carte
+        const map = new ol.Map({
+            target: 'map',
+            layers: [osmLayer, ignLayer, pianoLayer, indicateurLayer, geodoublonsLayer],
+            view: new ol.View({
+                center: ol.proj.fromLonLat([-1.68, 48.11]), // Centré sur Rennes
+                zoom: 9
+            })
+        });
+
+        // Gestion du changement de fond de plan
+        document.querySelectorAll('input[name="basemap"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                osmLayer.setVisible(e.target.value === 'osm');
+                ignLayer.setVisible(e.target.value === 'ign');
+                pianoLayer.setVisible(e.target.value === 'piano');
+            });
+        });
+
+        // Fonction pour activer/désactiver les couches
+        function toggleLayer(layerName) {
+            if (layerName === 'indicateur') {
+                indicateurLayer.setVisible(true);
+                geodoublonsLayer.setVisible(false);
+            } else if (layerName === 'geodoublons') {
+                indicateurLayer.setVisible(false);
+                geodoublonsLayer.setVisible(true);
+            }
+        }
+
+        // Gestion du clic sur la carte
+        map.on('click', (evt) => {
+            const feature = map.forEachFeatureAtPixel(evt.pixel, (feature) => {
+                return feature;
+            });
+
+            if (feature) {
+                displayFeatureInfo(feature);
+            }
+        });
+
+        // Curseur pointer sur les objets
+        map.on('pointermove', (evt) => {
+            const pixel = map.getEventPixel(evt.originalEvent);
+            const hit = map.hasFeatureAtPixel(pixel);
+            map.getTargetElement().style.cursor = hit ? 'pointer' : '';
+        });
+
+        function displayFeatureInfo(feature) {
+            const props = feature.getProperties();
+            
+            const fields = [
+                { key: 'commune_nom', label: 'Commune', extra: props.commune_insee ? `(${props.commune_insee})` : '' },
+                { key: 'classement', label: 'Classement' },
+                { key: 'indicateur_aggrege', label: 'Indicateur agrégé' },
+                { key: 'nb_adresses_total', label: 'Nombre d\'adresses total' },
+                { key: 'nb_adresses_certifiees', label: 'Nombre d\'adresses certifiées' },
+                { key: 'nb_adresses_source_commune', label: 'Nombre d\'adresses source commune' },
+                { key: 'date_premiere_maj', label: 'Date première MAJ' },
+                { key: 'date_derniere_maj', label: 'Date dernière MAJ' },
+                { key: 'nb_dates_distinctes', label: 'Nombre de dates distinctes' },
+                { key: 'duree_maj_en_nb_de_jour', label: 'Durée MAJ (en jours)' },
+                { key: 'nb_adresses_modifiees_recement', label: 'Nombre d\'adresses modifiées récemment' },
+                { key: 'nb_geodoublons', label: 'Nombre de géodoublons' }
+            ];
+
+            let html = '';
+            fields.forEach(field => {
+                let value = props[field.key];
+                if (value !== undefined && value !== null) {
+                    if (field.extra) {
+                        value += ' ' + field.extra;
+                    }
+                    html += `
+                        <div class="info-item">
+                            <div class="info-label">${field.label}</div>
+                            <div class="info-value">${value}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            document.getElementById('panel-content').innerHTML = html;
+            document.getElementById('info-panel').classList.add('open');
+        }
+
+        function closePanel() {
+            document.getElementById('info-panel').classList.remove('open');
+        }
+
+        // Ajuster la vue sur les données une fois chargées
+        indicateurLayer.getSource().on('change', function() {
+            if (indicateurLayer.getSource().getState() === 'ready') {
+                const extent = indicateurLayer.getSource().getExtent();
+                map.getView().fit(extent, { padding: [50, 50, 50, 50] });
+            }
+        });
+    </script>
+</body>
+</html>
