@@ -155,6 +155,15 @@ Lancer ce script pour créer un point d'historisation des indicateurs (à lancer
 
     ./creer_historique.sh
 
+On peut importer d'une traite plusieurs historiques en enchainant les commandes, par exemple : 
+
+    ./import_bal_csv.sh -dpt 63 -date 2023-01-04 && ./calculer_indicateurs.sh && ./creer_historique.sh
+    ./import_bal_csv.sh -dpt 63 -date 2023-06-07 && ./calculer_indicateurs.sh && ./creer_historique.sh
+    ./import_bal_csv.sh -dpt 63 -date 2024-01-03 && ./calculer_indicateurs.sh && ./creer_historique.sh
+    ./import_bal_csv.sh -dpt 63 -date 2024-06-05 && ./calculer_indicateurs.sh && ./creer_historique.sh
+    ./import_bal_csv.sh -dpt 63 -date 2025-01-01 && ./calculer_indicateurs.sh && ./creer_historique.sh
+    ./import_bal_csv.sh -dpt 63 -date 2025-06-04 && ./calculer_indicateurs.sh && ./creer_historique.sh
+    ./import_bal_csv.sh -dpt 63 -date latest && ./calculer_indicateurs.sh && ./creer_historique.sh
 
 
 ## Modèle de données
