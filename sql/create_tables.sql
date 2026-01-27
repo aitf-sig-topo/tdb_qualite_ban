@@ -46,6 +46,7 @@ CREATE TABLE bal_indicateurs (
     duree_maj_en_nb_de_jour int4 NULL,
     nb_adresses_modifiees_recement int8 NULL,
     nb_geodoublons numeric NULL,
+    nb_adresses_doublon_semantique numeric NULL,
     indicateur_aggrege int4 NULL,
     surface_commune_km2 int4 NULL,
     geom geometry(multipolygon, 2154) NULL
@@ -73,6 +74,7 @@ CREATE TABLE bal_indicateurs_hist (
     duree_maj_en_nb_de_jour int4 NULL,
     nb_adresses_modifiees_recement int8 NULL,
     nb_geodoublons numeric NULL,
+    nb_adresses_doublon_semantique numeric NULL,
     indicateur_aggrege int4 NULL,
     surface_commune_km2 int4 NULL,
     geom geometry(multipolygon, 2154) NULL

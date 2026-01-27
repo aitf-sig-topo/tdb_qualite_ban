@@ -98,6 +98,29 @@ nb_adresses_geodoublon_par_commune as ( -- decompte par commune
     GROUP BY
         commune_nom, commune_insee      
 ),
+-- quatrième indicateur : nombre d'adresses qui sont en doublon "sémantique" : meme commune/lieu dit/voie/numero/suffixe/position
+nb_adresses_doublon_semantique as (
+    SELECT 
+        commune_nom,
+        commune_insee,
+        count(*)  nb_adresses_doublon_semantique
+    FROM
+        bal 
+    GROUP BY
+        numero, suffixe, position, voie_nom, lieudit_complement_nom, commune_insee, commune_nom
+    HAVING
+      count(*) > 1
+),
+nb_adresses_doublon_semantique_par_commune as ( -- decompte par commune
+    SELECT 
+        commune_nom, 
+        commune_insee,
+        sum(nb_adresses_doublon_semantique) nb_adresses_doublon_semantique
+    FROM
+        nb_adresses_doublon_semantique
+    GROUP BY
+        commune_nom, commune_insee      
+),
 -- regroupe tous les indicateurs 
 indicateurs_tous as (
     SELECT
@@ -105,6 +128,7 @@ indicateurs_tous as (
         coalesce(nb_dates_distinctes_par_commune.nb_dates_distinctes, 0) nb_dates_distinctes,
         coalesce(nb_adresse_modifiees.nb_adresses_modifiees_recement, 0) nb_adresses_modifiees_recement,
         coalesce(nb_adresses_geodoublon_par_commune.nb_adresses_geodoublon, 0) nb_geodoublons,
+        coalesce(nb_adresses_doublon_semantique_par_commune.nb_adresses_doublon_semantique, 0) nb_adresses_doublon_semantique,
         round(geo_commune.superficie_cadastrale / 100, 1) surface_commune_km2, -- surface en ha dans referentiel cadastral
         geo_commune.classement,
         geo_commune.geom
@@ -113,6 +137,7 @@ indicateurs_tous as (
             LEFT JOIN nb_dates_distinctes_par_commune on nb_dates_distinctes_par_commune.commune_insee = indicateurs_de_base.commune_insee
             LEFT JOIN nb_adresse_modifiees on nb_adresse_modifiees.commune_insee = indicateurs_de_base.commune_insee
             LEFT JOIN nb_adresses_geodoublon_par_commune on nb_adresses_geodoublon_par_commune.commune_insee = indicateurs_de_base.commune_insee
+            LEFT JOIN nb_adresses_doublon_semantique_par_commune on nb_adresses_doublon_semantique_par_commune.commune_insee = indicateurs_de_base.commune_insee
             INNER JOIN 
                 referentiel_communal geo_commune -- A MODIFIER SELON LA TABLE CONTENANT LA GEOMETRIE DES COMMUNES
                 on geo_commune.code_insee = indicateurs_de_base.commune_insee::text -- A MODIFIER SELON le nom du champs code insee de la commune
@@ -153,6 +178,15 @@ indicateurs_agrege AS (
             else
               ( greatest( coalesce(log(10, "nb_geodoublons" + 0.00001 ),0),0) * 7.0  )  *  1.0
             end
+            -- pénalité s'il y a des doublons sémantiques
+            - 
+            case when classement in ('Rural à habitat dispersé', 'Rural à habitat très dispersé' ) then 
+              ( greatest( coalesce(log(10, "nb_adresses_doublon_semantique" + 0.00001 ),0),0) * 7.0  )  *  3.0
+            when classement in ('Bourgs ruraux ', 'Ceintures urbaines', 'Petites villes' ) then
+              ( greatest( coalesce(log(10, "nb_adresses_doublon_semantique" + 0.00001 ),0),0) * 7.0  )  *  1.7
+            else
+              ( greatest( coalesce(log(10, "nb_adresses_doublon_semantique" + 0.00001 ),0),0) * 7.0  )  *  1.0
+            end
             +
             (  "nb_adresses_source_commune"  * 1.0 /  "nb_adresses_total"   * 5 )
         )::integer as indicateur_aggrege,
@@ -167,6 +201,7 @@ INSERT INTO ban_qualite.bal_indicateurs
     date_premiere_maj, date_derniere_maj, nb_dates_distinctes, 
     duree_maj_en_nb_de_jour, nb_adresses_modifiees_recement, 
     nb_geodoublons, 
+    nb_adresses_doublon_semantique,
     indicateur_aggrege,
     surface_commune_km2, geom)
 SELECT
@@ -175,6 +210,7 @@ SELECT
     date_premiere_maj, date_derniere_maj, nb_dates_distinctes, 
     duree_maj_en_nb_de_jour, nb_adresses_modifiees_recement, 
     nb_geodoublons, 
+    nb_adresses_doublon_semantique,
     least( greatest(indicateur_aggrege, 0), 100),  -- limite indicateur entre 0 et 100 , 
     surface_commune_km2, geom
 FROM indicateurs_agrege a

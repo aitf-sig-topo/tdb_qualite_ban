@@ -14,6 +14,7 @@ On se propose de décrire l'activité d'une BAL à l'aide de plusieurs indicateu
 - Taux de certification des adresses.
 - Taux d’adresses de source communale.
 - Nombre d'adresses superposées les unes aux autres : "géodoublons", caractéristiques d'une BAL qui n'a pas été "nettoyée" des anciennes adresses du cadastre.
+- Nombre d'adresses en doublon "sémantique" : même commune, lieu-dit, voie, numéro, suffixe et position.
 
 
 ## Installation

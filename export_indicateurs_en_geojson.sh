@@ -5,7 +5,7 @@ echo ""
 echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
 echo ""
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "  Exporte la table des indicateurs. Pour exporter aussi les indicateurs historique, rajouter l'option -hist"
+echo "  Exporte la table des indicateurs. Pour exporter aussi les indicateurs historiques, rajouter l'option -hist"
 echo ""
 
 # lecture du fichier de configuration
