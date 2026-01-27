@@ -90,6 +90,10 @@ Une fois la table des indicateurs créée dans Postgresql, on peut l'exporter en
     
 Le fichier résultat se trouve dans le dossier "out".
 
+On peut également exporter la table des indicateurs historisés en rajoutant l'option "-hist"
+
+    ./export_indicateurs_en_geojson.sh -hist
+
 
 ## Exploitation
 
