@@ -47,8 +47,10 @@ CREATE TABLE bal_indicateurs (
     nb_adresses_modifiees_recement int8 NULL,
     nb_geodoublons numeric NULL,
     nb_adresses_doublon_semantique numeric NULL,
+    nb_adresses_pour_100_habitants numeric NULL,
     indicateur_aggrege int4 NULL,
     surface_commune_km2 int4 NULL,
+    population int4 NULL,
     geom geometry(multipolygon, 2154) NULL
 );
 
@@ -75,8 +77,10 @@ CREATE TABLE bal_indicateurs_hist (
     nb_adresses_modifiees_recement int8 NULL,
     nb_geodoublons numeric NULL,
     nb_adresses_doublon_semantique numeric NULL,
+    nb_adresses_pour_100_habitants numeric NULL,
     indicateur_aggrege int4 NULL,
     surface_commune_km2 int4 NULL,
+    population int4 NULL,
     geom geometry(multipolygon, 2154) NULL
 );
 

@@ -72,6 +72,7 @@ if [ ! -f "$BAL_FILE" ]; then
     echo "Téléchargement du fichier BAL $BAL_DATE" 
 
     echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
+    echo wget --no-clobber --progress=bar:force:noscroll -q --show-progress $BAL_URL -O "$BAL_FILE.gz"
     wget --no-clobber --progress=bar:force:noscroll -q --show-progress $BAL_URL -O "$BAL_FILE.gz"
     gzip -d -f "$BAL_FILE.gz"
     echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
@@ -90,16 +91,8 @@ else
         gzip -d -f "$BAL_FILE.gz"
         echo "[$(date '+%d/%m/%Y %H:%M:%S')]"
     else
-        echo "Le fichier a été téléchargé récemment. Aucun téléchargement nécessaire."
-        
-        # et on s'arrête là
-        exit 0
-        echo ""
-        echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-        echo "  FINI"
+        echo "Le fichier a été téléchargé récemment. Aucun téléchargement nécessaire."        
     fi
-
-
 
     
 fi

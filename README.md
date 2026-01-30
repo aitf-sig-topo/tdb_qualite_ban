@@ -14,7 +14,8 @@ On se propose de décrire l'activité d'une BAL à l'aide de plusieurs indicateu
 - Taux de certification des adresses.
 - Taux d’adresses de source communale.
 - Nombre d'adresses superposées les unes aux autres : "géodoublons", caractéristiques d'une BAL qui n'a pas été "nettoyée" des anciennes adresses du cadastre.
-- Nombre d'adresses en doublon "sémantique" : même commune, lieu-dit, voie, numéro, suffixe et position.
+- Nombre d'adresses en doublon "sémantique" : même commune, lieu-dit, voie, numéro, suffixe et position. Un trop grand nombre de ces doublons indique une BAL comportant trop d'erreurs de saisie.
+- Nombre d'adresses pour 100 habitants : une trop faible densité d'adresse est le signe d'une BAL incomplète.
 
 
 ## Installation

@@ -130,6 +130,8 @@ indicateurs_tous as (
         coalesce(nb_adresses_geodoublon_par_commune.nb_adresses_geodoublon, 0) nb_geodoublons,
         coalesce(nb_adresses_doublon_semantique_par_commune.nb_adresses_doublon_semantique, 0) nb_adresses_doublon_semantique,
         round(geo_commune.superficie_cadastrale / 100, 1) surface_commune_km2, -- surface en ha dans referentiel cadastral
+        round(indicateurs_de_base.nb_adresses_total * 100.0 / (geo_commune.population + 1) ) nb_adresses_pour_100_habitants, -- rajoute 1 car il y a 6 communes avec une population de zéro habitants
+        geo_commune.population population,
         geo_commune.classement,
         geo_commune.geom
     FROM
@@ -181,12 +183,27 @@ indicateurs_agrege AS (
             -- pénalité s'il y a des doublons sémantiques
             - 
             case when classement in ('Rural à habitat dispersé', 'Rural à habitat très dispersé' ) then 
-              ( greatest( coalesce(log(10, "nb_adresses_doublon_semantique" + 0.00001 ),0),0) * 7.0  )  *  3.0
+              ( greatest( coalesce(log(10, "nb_adresses_doublon_semantique" + 0.00001 ),0),0) * 7.0  )  *  3.5
             when classement in ('Bourgs ruraux ', 'Ceintures urbaines', 'Petites villes' ) then
-              ( greatest( coalesce(log(10, "nb_adresses_doublon_semantique" + 0.00001 ),0),0) * 7.0  )  *  1.7
+              ( greatest( coalesce(log(10, "nb_adresses_doublon_semantique" + 0.00001 ),0),0) * 7.0  )  *  2.0
             else
               ( greatest( coalesce(log(10, "nb_adresses_doublon_semantique" + 0.00001 ),0),0) * 7.0  )  *  1.0
             end
+            -- pénalité s'il y a une densité d'adresse trop faible
+            - 
+            case when classement in ('Rural à habitat dispersé', 'Rural à habitat très dispersé' ) then 
+              ( 25 - least( "nb_adresses_pour_100_habitants", 50  )  * 0.2 )  
+            when classement in ('Bourgs ruraux' ) then 
+              ( 20 - least( "nb_adresses_pour_100_habitants", 40  )  * 0.25 ) 
+            when classement in ('Petites villes' ) then 
+              ( 18 - least( "nb_adresses_pour_100_habitants", 36  )  * 0.27 ) 
+            when classement in ('Ceintures urbaines' ) then 
+              ( 15 - least( "nb_adresses_pour_100_habitants", 30  )  * 0.33 )  
+            when classement in ('Centres urbains intermédiaires' ) then 
+              ( 12 - least( "nb_adresses_pour_100_habitants", 24  )  * 0.41 ) 
+            when classement in ('Grands centres urbains' ) then 
+              ( 7.5 - least( "nb_adresses_pour_100_habitants", 15  )  * 0.66 )               
+            end            
             +
             (  "nb_adresses_source_commune"  * 1.0 /  "nb_adresses_total"   * 5 )
         )::integer as indicateur_aggrege,
@@ -202,8 +219,11 @@ INSERT INTO ban_qualite.bal_indicateurs
     duree_maj_en_nb_de_jour, nb_adresses_modifiees_recement, 
     nb_geodoublons, 
     nb_adresses_doublon_semantique,
+    nb_adresses_pour_100_habitants,
     indicateur_aggrege,
-    surface_commune_km2, geom)
+    surface_commune_km2,
+    population,
+    geom)
 SELECT
     commune_insee, commune_nom, classement,
     nb_adresses_total, nb_adresses_certifiees, nb_adresses_source_commune,
@@ -211,7 +231,10 @@ SELECT
     duree_maj_en_nb_de_jour, nb_adresses_modifiees_recement, 
     nb_geodoublons, 
     nb_adresses_doublon_semantique,
+    nb_adresses_pour_100_habitants,
     least( greatest(indicateur_aggrege, 0), 100),  -- limite indicateur entre 0 et 100 , 
-    surface_commune_km2, geom
+    surface_commune_km2, 
+    population,
+    geom
 FROM indicateurs_agrege a
 ;
