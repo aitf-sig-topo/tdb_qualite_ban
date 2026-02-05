@@ -8,17 +8,19 @@ bal as (
     FROM 
         bal_brute
     WHERE 
-        numero != '99999' -- ignore numero specifique
+        -- elimine cas très particulier de cette commune en doublon au 05-02-2026, il faudrait faire un code plus générique mais en attendant...
+        not (commune_nom = 'Beaumesnil' and commune_insee = '27049') 
+        -- where contextuel injecté par commande sh
         #where_clause#
 ),
--- indicateurs simples sur les communes (servironts aux autres indicateurs)
+-- indicateurs simples sur les communes (serviront aux autres indicateurs)
 indicateurs_de_base_par_commune as (
     SELECT 
         commune_nom,
         commune_insee,
-        count(*) nb_adresses_total,
-        count(*) filter( WHERE certification_commune=1) nb_adresses_certifiees,
-        count(*) filter( WHERE source='commune' ) nb_adresses_source_commune,
+        count(*) filter( WHERE numero != '99999') nb_adresses_total,
+        count(*) filter( WHERE numero != '99999' and certification_commune=1) nb_adresses_certifiees,
+        count(*) filter( WHERE numero != '99999' and  source='commune' ) nb_adresses_source_commune,
         min(date_der_maj) date_premiere_maj,
         max(date_der_maj) date_derniere_maj,
         coalesce(max(date_der_maj)::date - min(date_der_maj)::date,0) duree_maj_en_nb_de_jour
@@ -33,7 +35,6 @@ nb_dates_distinctes as (
         SELECT 
             commune_nom,
             commune_insee,
-            count(*)  over( partition by commune_insee) nb_adresses_total,
             count(*) over( partition by commune_insee, date_der_maj ) as nb_adresses_modifiees,
             date_der_maj
         FROM
@@ -44,12 +45,7 @@ nb_dates_distinctes_par_commune as ( -- regroupement et decompte par commune
     SELECT 
         commune_nom, 
         commune_insee,
-        -- nb_adresses_total,
         count(*) -1 nb_dates_distinctes -- retire le jour de la mise à jour
-        -- min(date_der_maj) date_ancienne_modif,
-        -- max(date_der_maj) date_derniere_modif,
-        -- max(date_der_maj)::date - min(date_der_maj)::date periode_de_saisie_en_nb_de_jour
-        -- count(*)::real * 100.0 / greatest(1, max(date_der_maj)::date - min(date_der_maj)::date ) as coef_nb_jours_avec_mise_a_jour
     FROM 
         nb_dates_distinctes
     GROUP BY  
@@ -63,13 +59,13 @@ nb_adresse_modifiees as (
         SELECT 
             bal.commune_nom,
             bal.commune_insee,
-            -- indicateur.nb_adresses_total,
             count(*)  over( partition by bal.commune_insee) nb_adresses_modifiees_recement
-            -- bal.date_der_maj
         FROM
             bal 
             INNER JOIN indicateurs_de_base_par_commune indicateur on indicateur.commune_insee = bal.commune_insee 
         WHERE
+            numero != '99999'
+            and
             date_der_maj is not null 
             and 
             date_der_maj > now() - interval '2 year'
@@ -83,6 +79,8 @@ nb_adresses_geodoublon as (
         count(*)  nb_adresses_geodoublon
     FROM
         bal 
+    WHERE  
+        numero != '99999'
     GROUP BY
         bal.commune_nom, commune_insee, bal.x::text || bal.y::text
     HAVING
@@ -106,6 +104,8 @@ nb_adresses_doublon_semantique as (
         count(*)  nb_adresses_doublon_semantique
     FROM
         bal 
+    WHERE  
+        numero != '99999'
     GROUP BY
         numero, suffixe, position, voie_nom, lieudit_complement_nom, commune_insee, commune_nom
     HAVING
@@ -170,7 +170,7 @@ indicateurs_agrege AS (
             end
             +
             -- nombre d'adresses certifiées
-            ( "nb_adresses_certifiees" * 1.0 /  "nb_adresses_total" * 10.0 )  * 2.0
+            ( "nb_adresses_certifiees" * 1.0 /  ( "nb_adresses_total" + 00000.1) * 10.0 )  * 2.0
             -- pénalite s'il y a des geodoublons
             -  
             case when classement in ('Rural à habitat dispersé', 'Rural à habitat très dispersé' ) then 
@@ -205,7 +205,7 @@ indicateurs_agrege AS (
               ( 7.5 - least( "nb_adresses_pour_100_habitants", 15  )  * 0.66 )               
             end            
             +
-            (  "nb_adresses_source_commune"  * 1.0 /  "nb_adresses_total"   * 5 )
+            (  "nb_adresses_source_commune"  * 1.0 /  ( "nb_adresses_total" + 00000.1)   * 5 )
         )::integer as indicateur_aggrege,
         indicateurs_tous.*
     FROM
@@ -236,5 +236,5 @@ SELECT
     surface_commune_km2, 
     population,
     geom
-FROM indicateurs_agrege a
+FROM indicateurs_agrege 
 ;
