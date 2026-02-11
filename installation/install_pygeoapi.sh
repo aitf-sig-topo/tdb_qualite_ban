@@ -20,8 +20,11 @@ cd pygeoapi/
 pip install -r requirements.txt
 pip install .
 
-cp pygeoapi-config.yml example-config.yml
-nano example-config.yml  # edit as required
+# complément pour tuiles vecteur
+pip install geoalchemy2
+
+# cp pygeoapi-config.yml example-config.yml
+# nano example-config.yml  # edit as required
 
 deactivate
 

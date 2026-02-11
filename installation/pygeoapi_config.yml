@@ -73,16 +73,16 @@ resources:
                   password: vivelaterritoriale
                   search_path: [ban_qualite, public]
                   # Vous devrez adapter ces champs selon votre schéma de table
-                  id_field: commune_insee
-                  table: bal_indicateurs
-                  geom_field: geom
-                  storage_crs: http://www.opengis.net/def/crs/EPSG/0/2154
+              id_field: commune_insee
+              table: bal_indicateurs
+              geom_field: geom
+              storage_crs: http://www.opengis.net/def/crs/EPSG/0/2154
               options:
                   zoom:
                       min: 0
                       max: 16
-                  schemes:
-                      - WebMercatorQuad
+                  # schemes:
+                  #     - WebMercatorQuad
               format:
                   name: pbf
                   mimetype: application/vnd.mapbox-vector-tile

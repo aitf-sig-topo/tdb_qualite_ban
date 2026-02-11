@@ -9,9 +9,8 @@ cp -f installation/pygeoapi_config.yml pygeoapi/config.yml
 
 cd pygeoapi/
 
-export PYGEOAPI_CONFIG=config.yml
-export PYGEOAPI_OPENAPI=openapi.yml
+pygeoapi openapi generate config.yml --output-file openapi.yml
 
-pygeoapi openapi generate $PYGEOAPI_CONFIG --output-file $PYGEOAPI_OPENAPI
+pygeoapi openapi validate openapi.yml
 
 deactivate
