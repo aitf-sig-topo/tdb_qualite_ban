@@ -3,11 +3,11 @@
 
 -- rajoute colomne geometrie typee
 ALTER TABLE IF EXISTS referentiel_communal
-        ADD COLUMN geom public.geometry(MultiPolygon,2154);
+        ADD COLUMN geom public.geometry(MultiPolygon,3857);
 
 
 -- copie géometrie non typée vers geométrie typée
-UPDATE referentiel_communal set geom = ST_Multi(st_transform(geom_org, 2154)); 
+UPDATE referentiel_communal set geom = ST_Multi(st_transform(geom_org, 3857)); 
 
 -- supprime colonne géométrie non typée
 ALTER TABLE referentiel_communal drop column geom_org ;

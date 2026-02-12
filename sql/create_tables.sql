@@ -51,7 +51,7 @@ CREATE TABLE bal_indicateurs (
     indicateur_aggrege int4 NULL,
     surface_commune_km2 int4 NULL,
     population int4 NULL,
-    geom geometry(multipolygon, 2154) NULL
+    geom geometry(multipolygon, 3857) NULL
 );
 
 CREATE UNIQUE INDEX bal_indicateurs_commune_insee_idx ON bal_indicateurs (commune_insee);
@@ -81,7 +81,7 @@ CREATE TABLE bal_indicateurs_hist (
     indicateur_aggrege int4 NULL,
     surface_commune_km2 int4 NULL,
     population int4 NULL,
-    geom geometry(multipolygon, 2154) NULL
+    geom geometry(multipolygon, 3857) NULL
 );
 
 ALTER TABLE bal_indicateurs_hist ADD CONSTRAINT bal_indicateurs_hist_pk PRIMARY KEY (commune_insee,hist_date);
