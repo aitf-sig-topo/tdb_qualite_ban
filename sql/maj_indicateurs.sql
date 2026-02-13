@@ -4,7 +4,33 @@ WITH
 bal as ( 
     -- csv bal importé dans postgresql 
     SELECT 
-        * 
+        case 
+            -- arrondissement Paris 
+            when commune_insee in ('75101','75102','75103','75104','75105','75106','75107','75108','75109','75110','75111','75112','75113','75114','75115','75116','75117','75118','75119','75120') then '75056'
+            -- arrondissement Marseille
+            when commune_insee in ('13201','13202','13203','13204','13205','13206','13207','13208','13209','13210','13211','13212','13213','13214','13215','13216') then '13055'
+            -- arrondissement Lyon
+            when commune_insee in  ('69381','69382','69383','69384','69385','69386','69387','69388','69389') then '69123'
+            else commune_insee 
+        end as commune_insee,
+        case 
+            -- arrondissement Paris  
+            when commune_insee in ('75101','75102','75103','75104','75105','75106','75107','75108','75109','75110','75111','75112','75113','75114','75115','75116','75117','75118','75119','75120') then 'Paris'
+            -- arrondissement Marseille
+            when commune_insee in ('13201','13202','13203','13204','13205','13206','13207','13208','13209','13210','13211','13212','13213','13214','13215','13216') then 'Marseille'
+                        -- arrondissement Lyon
+            when commune_insee in  ('69381','69382','69383','69384','69385','69386','69387','69388','69389') then 'Lyon'
+            else commune_nom 
+        end as commune_nom,
+        voie_nom ,
+        lieudit_complement_nom ,
+        numero ,
+        suffixe ,
+        x, y,
+        position,
+        source,
+        date_der_maj,
+        certification_commune 
     FROM 
         bal_brute
     WHERE 
@@ -149,11 +175,11 @@ indicateurs_agrege AS (
     SELECT
         -- indicateur agrégé
         round( 
-            --modifications recentes
+            --modifications recentes (ignore modif au delà de 100 adresses, ce n'est plus assez significatif)
             case when classement in ('Rural à habitat dispersé', 'Rural à habitat très dispersé' ) then 
-                ( greatest( coalesce(log(10, "nb_adresses_modifiees_recement" + 0.00001 ),0),0) * 5  ) * 1.40
+                ( greatest( coalesce(log(10, least("nb_adresses_modifiees_recement", 100) + 0.00001 ),0),0) * 5  ) * 1.40
             else 
-                ( greatest( coalesce(log(10, "nb_adresses_modifiees_recement" + 0.00001 ),0),0) * 5  ) * 1.0
+                ( greatest( coalesce(log(10, least("nb_adresses_modifiees_recement", 100) + 0.00001 ),0),0) * 5  ) * 1.0
             end
             +
             -- 100% modifie recemment, petite penalite car s'apparente a une mise a jour en masse sans distinction
