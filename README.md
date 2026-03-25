@@ -41,11 +41,14 @@ Les limites des communes sont nécessaires pour cartographier les indicateurs. O
 
 - INSEE pour le classement par densité des communes : [https://www.insee.fr/fr/information/8571524](https://www.insee.fr/fr/information/8571524)
 
-Exécuter le script d'import :
+Pour créer le geojson du référenciel communal, on utilise [FME](https://fme.safe.com/), voir le fichier FME dans `./in/referentiel`
+Le geojson résultant (pour 2025) est dans le même dossier. Les DOM sont inclus.
+
+Exécuter le script d'import à partir du geojson :
  
     ./import_referentiel_communal.sh
 
-/!\ Attention, pour le moment, les limites des communes avec arrondissements n'est pas récupéré dans le fichier insee.
+/!\ Attention : les communes avec arrondissements sont fusionnées en une seule commune, il n'y a pas de conservation des BAL par arrondissement.
 
     
 
