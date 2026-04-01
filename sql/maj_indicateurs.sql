@@ -176,10 +176,13 @@ indicateurs_agrege AS (
         -- indicateur agrégé
         round( 
             --modifications recentes (ignore modif au delà de 100 adresses, ce n'est plus assez significatif)
-            case when classement in ('Rural à habitat dispersé', 'Rural à habitat très dispersé' ) then 
-                ( greatest( coalesce(log(10, least("nb_adresses_modifiees_recement", 100) + 0.00001 ),0),0) * 5  ) * 1.40
-            else 
-                ( greatest( coalesce(log(10, least("nb_adresses_modifiees_recement", 100) + 0.00001 ),0),0) * 5  ) * 1.0
+            case 
+                when classement in ('Rural à habitat dispersé', 'Rural à habitat très dispersé' ) then 
+                    ( greatest( coalesce(log(10, least("nb_adresses_modifiees_recement", 100) + 0.00001 ),0),0) * 5  ) * 1.40
+                when classement in ('Bourgs ruraux', 'Ceintures urbaines' ) then 
+                    ( greatest( coalesce(log(10, least("nb_adresses_modifiees_recement", 100) + 0.00001 ),0),0) * 5  ) * 1.15
+                else 
+                    ( greatest( coalesce(log(10, least("nb_adresses_modifiees_recement", 100) + 0.00001 ),0),0) * 5  ) * 1.0
             end
             +
             -- 100% modifie recemment, petite penalite car s'apparente a une mise a jour en masse sans distinction
@@ -189,10 +192,13 @@ indicateurs_agrege AS (
            ( greatest( coalesce(log(180,"duree_maj_en_nb_de_jour" + 0.00001 ),0),0) * 9 )  * 0.5
             + 
             -- nombre de date distinctes de mises à jour, plus il y en a, plus la mise a jour est reguliere et suivie
-            case when classement in ('Rural à habitat dispersé', 'Rural à habitat très dispersé' ) then 
-              ( greatest( coalesce(log( 5, "nb_dates_distinctes" + 0.0001 ),0),0) * 6 )   * 2.0
-            else 
-              ( greatest( coalesce(log( 5, "nb_dates_distinctes" + 0.0001 ),0),0) * 6 )   * 1.0
+            case 
+                when classement in ('Rural à habitat dispersé', 'Rural à habitat très dispersé' ) then 
+                    ( greatest( coalesce(log( 5, "nb_dates_distinctes" + 0.0001 ),0),0) * 6 )   * 2.0
+                when classement in ('Bourgs ruraux', 'Ceintures urbaines' ) then 
+                    ( greatest( coalesce(log( 5, "nb_dates_distinctes" + 0.0001 ),0),0) * 6 )   * 1.3
+                else 
+                    ( greatest( coalesce(log( 5, "nb_dates_distinctes" + 0.0001 ),0),0) * 6 )   * 1.0
             end
             +
             -- nombre d'adresses certifiées
