@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BAL – Indicateurs</title>
+
+  <!-- OpenLayers -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css">
+    <script src="https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: #0d1117;
+      color: #e6edf3;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 22px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      flex-shrink: 0;
+    }
+
+    header .badge {
+      background: #238636;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 2px;
+    }
+
+    header h1 {
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      color: #8b949e;
+    }
+
+    header h1 span { color: #58a6ff; }
+
+    #map {
+      flex: 1;
+    }
+
+    .ol-zoom {
+      top: 16px;
+      left: 16px;
+    }
+
+    .ol-zoom button {
+      background: #161b22 !important;
+      color: #58a6ff !important;
+      border: 1px solid #30363d !important;
+      border-radius: 2px !important;
+      font-size: 18px !important;
+      width: 30px !important;
+      height: 30px !important;
+      line-height: 28px !important;
+    }
+
+    .ol-zoom button:hover {
+      background: #21262d !important;
+    }
+
+    .ol-attribution {
+      background: rgba(22,27,34,0.85) !important;
+      color: #8b949e !important;
+      font-size: 10px !important;
+      border-radius: 2px !important;
+    }
+
+    #info {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(22,27,34,0.92);
+      border: 1px solid #30363d;
+      border-radius: 3px;
+      padding: 8px 18px;
+      font-size: 11px;
+      color: #8b949e;
+      letter-spacing: 1px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="badge">pygeoapi</div>
+  <h1>BAL – <span>Indicateurs</span> · Tuiles vectorielles WebMercatorQuad</h1>
+</header>
+
+<div id="map"></div>
+<div id="info">Cliquez sur un polygone pour voir ses attributs</div>
+
+<script>
+  // ── Style polygones ──────────────────────────────────────────────
+  const polygonStyle = new ol.style.Style({
+    fill: new ol.style.Fill({
+      color: 'rgba(88, 166, 255, 0.5)'   // bleu – fill-opacity 0.5
+    }),
+    stroke: new ol.style.Stroke({
+      color: '#000000',
+      width: 2
+    })
+  });
+
+  const hoverStyle = new ol.style.Style({
+    fill: new ol.style.Fill({
+      color: 'rgba(35, 134, 54, 0.5)'    // vert au survol
+    }),
+    stroke: new ol.style.Stroke({
+      color: '#000000',
+      width: 2
+    })
+  });
+
+  const styleFunction = () => polygonStyle;
+
+  // ── Source tuiles vectorielles (pygeoapi / PBF) ──────────────────
+  const vectorTileSource = new ol.source.VectorTile({
+    format: new ol.format.MVT(),
+    url: 'http://aitf-ban.breizhpositive.bzh:5000/collections/bal-indicateurs/tiles/WebMercatorQuad/{z}/{x}/{y}?f=pbf',
+    maxZoom: 22,
+    attributions: '© <a href="http://aitf-ban.breizhpositive.bzh:5000" target="_blank">BAL pygeoapi</a>'
+  });
+
+  const vectorTileLayer = new ol.layer.VectorTile({
+    source: vectorTileSource,
+    style: styleFunction
+  });
+
+  // ── Fond de carte OSM ────────────────────────────────────────────
+  const osmLayer = new ol.layer.Tile({
+    source: new ol.source.OSM()
+  });
+
+  // ── Carte ────────────────────────────────────────────────────────
+  const map = new ol.Map({
+    target: 'map',
+    layers: [osmLayer, vectorTileLayer],
+    view: new ol.View({
+      center: ol.proj.fromLonLat([-2.0, 48.0]),   // Bretagne
+      zoom: 8
+    })
+  });
+
+  // ── Interaction : clic ───────────────────────────────────────────
+  const infoEl = document.getElementById('info');
+  let highlighted = null;
+
+  map.on('click', (evt) => {
+    if (highlighted) {
+      highlighted.setStyle(undefined);   // retour au style de la couche
+      highlighted = null;
+    }
+
+    map.forEachFeatureAtPixel(evt.pixel, (feature) => {
+      const props = feature.getProperties();
+      delete props.geometry;
+      const entries = Object.entries(props).slice(0, 6)
+        .map(([k, v]) => `${k}: <span style="color:#58a6ff">${v}</span>`)
+        .join(' · ');
+      infoEl.innerHTML = entries || 'Aucun attribut';
+      feature.setStyle(hoverStyle);
+      highlighted = feature;
+      return true;   // stop après le premier
+    }, { layerFilter: l => l === vectorTileLayer });
+  });
+
+  // curseur pointer sur les entités
+  map.on('pointermove', (evt) => {
+    const hit = map.hasFeatureAtPixel(evt.pixel, { layerFilter: l => l === vectorTileLayer });
+    map.getTargetElement().style.cursor = hit ? 'pointer' : '';
+  });
+</script>
+
+</body>
+</html>
